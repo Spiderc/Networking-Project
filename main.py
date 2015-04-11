@@ -1,17 +1,21 @@
+import id as id
+
 def getState():
 	result = "participate"
 	if False: #check the thing that i forgot the name for and if someone wants to join switch to join state
 		result = "join"
 	return result
 
+	
+ids = id.Id()
 while True:
 	state = getState()
 	if state == "join":
-		print "joining"
+		pass
 		#do join stuff here
 	elif state == "participate":
-		print "participating"
+		pass
 		#check to see if there's any datagrams in the outgoing queue
 		#else check to see if there's any datagrams in the incoming queue
-		#else check to see if the id queue is not full
-			#generate a new id to put into the id queue
+		if not ids.idQueue.full(): #make this an elif once the others parts are implemented
+			ids.generateId()
