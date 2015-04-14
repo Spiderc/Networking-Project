@@ -12,6 +12,12 @@ class Id:
 
 	def generateId(self):
 		Id.idQueue.put(os.urandom(Id.idLengthInBytes))
+		
+	def getId(self):
+		if Id.idQueue.empty():
+			return os.urandom(Id.idLengthInBytes)
+		else:
+			return Id.idQueue.get();
 
 	def setIDLength(self,lengthInBytes):
 		if lengthInBytes != Id.idLengthInBytes:
