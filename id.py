@@ -30,3 +30,6 @@ class Id:
 		Id.maxQueueLength = length
 		while Id.idQueue.qsize() > length:
 			Id.idQueue.get() #probably a better way of doing this
+	
+	def getIdString(self):
+		return self.getId().encode("hex")
