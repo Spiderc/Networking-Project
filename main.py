@@ -14,8 +14,6 @@ def mainLoop():
 			pass
 			#do join stuff here
 		elif state == "participate":
-			pass
 			#check to see if there's any datagrams in the outgoing queue
 			#else check to see if there's any datagrams in the incoming queue
-			if not ids.idQueue.full(): #make this an elif once the others parts are implemented
-				ids.generateId()
+			ids.generateId() #make this an else once the others parts are implemented

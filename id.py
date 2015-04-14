@@ -5,13 +5,14 @@ class Id:
 	idLengthInBytes = 16
 	maxQueueLength = 10000
 	idQueue = Queue.Queue(maxQueueLength)
-	zeroID = "0" * idLengthInBytes
+	zeroId = "0" * idLengthInBytes
 
 	def __init__(self):
 		pass
 
 	def generateId(self):
-		Id.idQueue.put(os.urandom(Id.idLengthInBytes))
+		if Id.idQueue.qsize() < Id.maxQueueLength:
+			Id.idQueue.put(os.urandom(Id.idLengthInBytes))
 		
 	def getId(self):
 		if Id.idQueue.empty():
@@ -19,10 +20,10 @@ class Id:
 		else:
 			return Id.idQueue.get();
 
-	def setIDLength(self,lengthInBytes):
+	def setIdLength(self,lengthInBytes):
 		if lengthInBytes != Id.idLengthInBytes:
 			Id.idLengthInBytes = lengthInBytes
-			Id.zeroID = "0" * lengthInBytes
+			Id.zeroId = "0" * lengthInBytes
 			#clear out the queue
 
 	def setMaxQueueLength(self,length):
