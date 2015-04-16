@@ -1,17 +1,8 @@
 
-
 class timeToLive:
 
-	timeToLive
-	
-	def TimeToLive(timeToLive):
+	def __init__(self, timeToLive):
+		self.ttl = timeToLive
 		
-		set(timeToLive)
-		
-	def get():
-		
-		return timeToLive
-		
-	def set(timeToLive):
-	
-		this.timeToLive = timeToLive
+	def set(self, newTimeToLive):
+		self.ttl = newTimeToLive
