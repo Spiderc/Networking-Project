@@ -7,12 +7,16 @@ def exit(argument):
 	
 def help(argument):
 	print "The recognized commands are as follows:"
-	print "exit				Exits the program"
-	print "help				Displays this menu"
+	print "exit		Exits the program"
+	print "help		Displays this menu"
+	print "query <String>	Queries the peer community for resources with the passed String"
+
+def query(argument):
+	print "Querying the peer community for the resource: " + argument + "."
 
 print "Welcome to the FS implementation of the gossip protocol."
 looper = True
-map = {"exit": exit, "help": help}
+map = {"exit": exit, "help": help, "query": query}
 while looper:
 	input = raw_input(">")
 	command = input
