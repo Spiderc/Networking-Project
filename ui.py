@@ -14,7 +14,15 @@ def exit(argument): #do we need to call leave from here?
 			pass #do nothing because they decided not to leave
 	else:
 		looper = False
-	
+
+def find(argument):
+	global inCommunity
+	if inCommunity:
+		print "Asking the peer community for resouces that have: " + argument + "."
+		#put the request into the commandQueue
+	else:
+		print "You are not currently in the peer community so you can not find resources."		
+		
 def help(argument):
 	print "The recognized commands are as follows:"
 	print "exit		Exits the program"
@@ -45,13 +53,14 @@ def query(argument):
 	global inCommunity
 	if inCommunity:
 		print "Querying the peer community for the resource: " + argument + "."
+		#put the request into the commandQueue
 	else:
 		print "You are not currently in the peer community so you can not make queries."
 
 print "Welcome to the FS implementation of the gossip protocol."
 looper = True
 inCommunity = False
-map = {"exit": exit, "help": help, "join": join, "leave": leave, "query": query}
+map = {"exit": exit, "find": find, "help": help, "join": join, "leave": leave, "query": query}
 while looper:
 	input = raw_input(">")
 	command = input
