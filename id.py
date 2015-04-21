@@ -31,7 +31,7 @@ class Id:
 	def setMaxQueueLength(self,length):
 		Id.maxQueueLength = length
 		while Id.idQueue.qsize() > length:
-			Id.idQueue.get() #probably a better way of doing this
+			Id.idQueue.get(False) #probably a better way of doing this
 	
 	def getAsHex(self):
 		return self.getAsString().encode("hex")

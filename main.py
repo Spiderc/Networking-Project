@@ -7,7 +7,15 @@ def getState():
 	return result
 
 def mainLoop():
+	#Initialize sending & receiving queues
+	maxQueueLength = 0 #0 means infinite queue size
+	sendQueue = Queue.Queue(maxQueueLength)
+	receiveQueue = Queue.Queue(maxQueueLength)
+	commandQueue = Queue.Queue(maxQueueLength)
+	
+	#Create an id object
 	ids = id.Id()
+	
 	while True:
 		state = getState()
 		if state == "join":
@@ -17,3 +25,11 @@ def mainLoop():
 			#check to see if there's any datagrams in the outgoing queue
 			#else check to see if there's any datagrams in the incoming queue
 			ids.generateId() #make this an else once the others parts are implemented
+			
+			#Check send queue
+			#thread.datagramSenderReceiver.send(sendQueue.get(False))
+			
+			#Check for incomming datagramPackets
+			#thread.datagramSenderReceiver.receive()
+				
+			
