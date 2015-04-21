@@ -26,6 +26,7 @@ def find(argument):
 def help(argument):
 	print "The recognized commands are as follows:"
 	print "exit		Exits the program"
+	print "find <String>	Asks the peer community for resources that have the passed String"
 	print "help		Displays this menu"
 	print "join		Joins the peer community"
 	print "leave		Leaves the peer community"
