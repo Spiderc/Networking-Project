@@ -1,7 +1,7 @@
 def error(command):
 	print command + " is not a recongized command. Type help to see all reconized commands."
 
-def exit(argument):
+def exit(argument): #do we need to call leave from here?
 	global looper
 	looper = False
 	
@@ -9,14 +9,35 @@ def help(argument):
 	print "The recognized commands are as follows:"
 	print "exit		Exits the program"
 	print "help		Displays this menu"
+	print "join		Joins the peer community"
+	print "leave		Leaves the peer community"
 	print "query <String>	Queries the peer community for resources with the passed String"
+
+def join(argument):
+	global inCommunity
+	if inCommunity:
+		print "You are already in the peer community"
+	else:
+		print "Joining the peer community"
+		#put the join stuff here
+		inCommunity = True
+
+def leave(argument):
+	global inCommunity
+	if inCommunity:
+		print "Leaving the peer community"
+		#put the leaving stuff here (probably just kill all threads and close ports)
+		inCommunity = False
+	else:
+		print "You are not currently in the peer community"
 
 def query(argument):
 	print "Querying the peer community for the resource: " + argument + "."
 
 print "Welcome to the FS implementation of the gossip protocol."
 looper = True
-map = {"exit": exit, "help": help, "query": query}
+inCommunity = False
+map = {"exit": exit, "help": help, "join": join, "leave": leave, "query": query}
 while looper:
 	input = raw_input(">")
 	command = input
