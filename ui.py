@@ -3,7 +3,17 @@ def error(command):
 
 def exit(argument): #do we need to call leave from here?
 	global looper
-	looper = False
+	global inCommunity
+	if inCommunity:
+		print "You are currently in the community, do you want to leave? (y/n)"
+		input = raw_input(">")
+		if input == "y":
+			leave(argument)
+			looper = False
+		else:
+			pass #do nothing because they decided not to leave
+	else:
+		looper = False
 	
 def help(argument):
 	print "The recognized commands are as follows:"
@@ -32,7 +42,11 @@ def leave(argument):
 		print "You are not currently in the peer community"
 
 def query(argument):
-	print "Querying the peer community for the resource: " + argument + "."
+	global inCommunity
+	if inCommunity:
+		print "Querying the peer community for the resource: " + argument + "."
+	else:
+		print "You are not currently in the peer community so you can not make queries."
 
 print "Welcome to the FS implementation of the gossip protocol."
 looper = True
