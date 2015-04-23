@@ -1,4 +1,20 @@
 import main as main
+import threading as threading
+import id as id
+
+def createThread(argument):
+	argument = int(argument)
+	global threads
+	for i in range(0, argument):
+		main = main.Main()
+		newThread = threading.Thread(None, main.start(), None, (), {})
+		threads.append(newThread)
+		newThread.start()
+	print "Created " + str(argument) + " threads."
+
+def countThreads(argument):
+	global threads
+	print "There are currently " + str(len(threads)) + " threads."
 
 def error(command):
 	print command + " is not a recongized command. Type help to see all reconized commands."
@@ -28,6 +44,7 @@ def find(argument):
 		
 def help(argument):
 	print "The recognized commands are as follows:"
+	print "countThreads	Returns the number of currently active threads"
 	print "exit		Exits the program"
 	print "find <String>	Asks the peer community for resources that have the passed String"
 	print "help		Displays this menu"
@@ -66,7 +83,8 @@ print "Welcome to the Spanish Inquisition's implementation of the gossip protoco
 looper = True
 inCommunity = False
 mainObject = main
-map = {"exit": exit, "find": find, "help": help, "join": join, "leave": leave, "query": query}
+map = {"createThread": createThread, "countThreads": countThreads, "exit": exit, "find": find, "help": help, "join": join, "leave": leave, "query": query}
+threads = []
 while looper:
 	input = raw_input(">")
 	command = input
