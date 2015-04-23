@@ -1,14 +1,16 @@
+import main as main
+
 def error(command):
 	print command + " is not a recongized command. Type help to see all reconized commands."
 
-def exit(argument): #do we need to call leave from here?
+def exit(argument):
 	global looper
 	global inCommunity
 	if inCommunity:
 		print "You are currently in the community, do you want to leave? (y/n)"
 		input = raw_input(">")
 		if input == "y":
-			leave(argument)
+			leave(argument) #we're fine passing down the argument because it's not used for either
 			looper = False
 		else:
 			pass #do nothing because they decided not to leave
@@ -19,7 +21,8 @@ def find(argument):
 	global inCommunity
 	if inCommunity:
 		print "Asking the peer community for resouces that have: " + argument + "."
-		#put the request into the commandQueue
+		global mainObject
+		mainObject.addToCommandQueue(["find", argument])
 	else:
 		print "You are not currently in the peer community so you can not find resources."		
 		
@@ -54,13 +57,15 @@ def query(argument):
 	global inCommunity
 	if inCommunity:
 		print "Querying the peer community for the resource: " + argument + "."
-		#put the request into the commandQueue
+		global mainObject
+		mainObject.addToCommandQueue(["query", argument])
 	else:
 		print "You are not currently in the peer community so you can not make queries."
 
-print "Welcome to the FS implementation of the gossip protocol."
+print "Welcome to the Spanish Inquisition's implementation of the gossip protocol."
 looper = True
 inCommunity = False
+mainObject = main
 map = {"exit": exit, "find": find, "help": help, "join": join, "leave": leave, "query": query}
 while looper:
 	input = raw_input(">")

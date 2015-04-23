@@ -1,4 +1,5 @@
 import id as id
+import Queue
 
 def getState():
 	result = "participate"
@@ -7,12 +8,6 @@ def getState():
 	return result
 
 def mainLoop():
-	#Initialize sending & receiving queues
-	maxQueueLength = 0 #0 means infinite queue size
-	sendQueue = Queue.Queue(maxQueueLength)
-	receiveQueue = Queue.Queue(maxQueueLength)
-	commandQueue = Queue.Queue(maxQueueLength)
-	
 	#Create an id object
 	ids = id.Id()
 	
@@ -31,5 +26,21 @@ def mainLoop():
 			
 			#Check for incomming datagramPackets
 			#thread.datagramSenderReceiver.receive()
-				
 			
+def addToSendQueue(object):
+	global sendQueue
+	sendQueue.put(object)
+	
+def addToRecieveQueue(object):
+	global receiveQueue
+	receiveQueue.put(object)
+	
+def addToCommandQueue(object):
+	global commandQueue
+	commandQueue.put(object)
+	
+#Initialize sending & receiving queues
+maxQueueLength = 0 #0 means infinite queue size
+sendQueue = Queue.Queue(maxQueueLength)
+receiveQueue = Queue.Queue(maxQueueLength)
+commandQueue = Queue.Queue(maxQueueLength)
