@@ -9,10 +9,6 @@ class datagramSenderReceiver:
 		self.sendQueue = sendQueue
 		self.receiveQueue = receiveQueue
 			
-	def stop(self):
-		#Stop Doing Everything!! ??Not sure if we need this
-		pass
-			
 	def receive(self):
 		x = 0
 	
@@ -27,16 +23,14 @@ class datagramSenderReceiver:
 		
 		#Put in incomming queue
 		#Determine Loop Size
-		#receiveQueue.put(sock.recv(10240)) #need to look at this, going to string?
+			###receiveQueue.put(sock.recv(10240)) #need to look at this, going to string?
 		
-		#buffer sizze of 10,240 for incoming data
-		#while(true) #Determine length of the loop
+		#while(x<10000) #Determine length of the loop
 		while x < 10000:
 			print sock.recv(10240)
 			x = x + 1
 		
 		
-	  
 	def send(self,datagramPacket):
 					
 		#Create a new socket (INET Sockets, Datagram Packets, UDP)			
