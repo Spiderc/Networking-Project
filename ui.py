@@ -2,12 +2,18 @@ import main
 import id
 
 def createThread(argument):
-	argument = int(argument)
-	global threads
-	for i in range(0, argument):
-		thread = main.Main()
-		threads.append(thread)
-	print "Created " + str(argument) + " threads."
+	try:
+		argument = int(argument)
+		global threads
+		if (argument + len(threads)) <= 50:
+			for i in range(0, argument):
+				thread = main.Main()
+				threads.append(thread)
+			print "Created " + str(argument) + " threads."
+		else:
+			print "You cannot have more than 50 threads. The current number of threads is " + str(len(threads)) + "."
+	except ValueError:
+		print "The createThread command only accepts integers as a parameter."
 
 def countThreads(argument):
 	global threads
@@ -75,7 +81,7 @@ def leave(argument):
 		#close ports
 		inCommunity = False
 	else:
-		print "You are not currently in the peer community"
+		print "You are not currently in the peer community."
 
 def query(argument):
 	global inCommunity
@@ -87,14 +93,17 @@ def query(argument):
 		print "You are not currently in the peer community so you can not make queries."
 		
 def stopThread(argument):
-	argument = int(argument)
-	global threads
-	if argument >= len(threads):
-		print "You cannot have less than 1 thread. The current number of threads is " + str(len(threads))
-	else:
-		for i in range(0, argument):
-			threads.pop().stopThread()
-		print "Stopped " + str(argument) + " threads."
+	try:
+		argument = int(argument)
+		global threads
+		if argument >= len(threads):
+			print "You cannot have less than 1 thread. The current number of threads is " + str(len(threads)) + "."
+		else:
+			for i in range(0, argument):
+				threads.pop().stopThread()
+			print "Stopped " + str(argument) + " threads."
+	except ValueError:
+		print "The stopThread command only accepts integers as a parameter."
 
 print "Welcome to the Spanish Inquisition's implementation of the gossip protocol."
 looper = True
