@@ -36,7 +36,7 @@ class Main:
 				elif not Main.receiveQueue.empty():
 					pass #handle the incoming message
 				else:
-					ids.generateId()
+					ids.idFactory()
 				
 	def addToSendQueue(self, object):
 		global sendQueue
