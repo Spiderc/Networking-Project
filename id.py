@@ -38,3 +38,9 @@ class Id:
 		
 	def getAsString(self):
 		return str(self.id)
+		
+	def equals(self, value):
+		return self.id == value.id
+
+	def isZero(self):
+		return self.id == Id.zeroId
