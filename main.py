@@ -8,6 +8,7 @@ class Main:
 	sendQueue = Queue.Queue(maxQueueLength)
 	receiveQueue = Queue.Queue(maxQueueLength)
 	commandQueue = Queue.Queue(maxQueueLength)
+	alertQueue = Queue.Queue(maxQueueLength)
 
 	def __init__(self):
 		self.running = True
@@ -30,7 +31,7 @@ class Main:
 				#do join stuff here
 			elif state == "participate":
 				if not Main.commandQueue.empty():
-					pass #handle the command
+					Main.handleCommandQueue(self, Main.commandQueue.get())
 				elif not Main.sendQueue.empty():
 					pass #handle the outgoing message
 				elif not Main.receiveQueue.empty():
@@ -50,5 +51,17 @@ class Main:
 		global commandQueue
 		Main.commandQueue.put(object)
 		
+	def addToAlertQueue(self, object):
+		global commandQueue
+		Main.alertQueue.put(object)
+		
 	def stopThread(self):
 		self.running = False
+		
+	def handleCommandQueue(self, object):
+		command = object[0]
+		argument = object[1]
+		if command == "query":
+			pass #create a query datagram
+		elif command == "find":
+			pass #create a find datagram

@@ -1,5 +1,13 @@
 import main
 import id
+import Queue
+
+def alerts(argument):
+	global mainThread
+	if mainThread.alertQueue.empty():
+		print "There are currently no pending alerts."
+	else:
+		print mainThread.alertQueue.get()
 
 def createThread(argument):
 	try:
@@ -49,6 +57,7 @@ def find(argument):
 		
 def help(argument):
 	print "The recognized commands are as follows:"
+	print "alerts		Prints out the next pending alert"
 	print "createThread <int>	Creates a number of threads equal to the passed integer"
 	print "countThreads		Returns the number of currently active threads"
 	print "exit			Exits the program"
@@ -109,9 +118,11 @@ print "Welcome to the Spanish Inquisition's implementation of the gossip protoco
 looper = True
 inCommunity = False
 mainThread = main.Main()
-map = {"createThread": createThread, "countThreads": countThreads, "exit": exit, "find": find, "help": help, "join": join, "leave": leave, "query": query, "stopThread": stopThread}
+map = {"alerts": alerts, "createThread": createThread, "countThreads": countThreads, "exit": exit, "find": find, "help": help, "join": join, "leave": leave, "query": query, "stopThread": stopThread}
 threads = [mainThread]
 while looper:
+	if not mainThread.alertQueue.empty():
+		print "You have " + str(mainThread.alertQueue.qsize()) + " alerts. Type alerts to see them."
 	input = raw_input(">")
 	command = input
 	argument = ""
