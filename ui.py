@@ -28,7 +28,7 @@ def countThreads(argument):
 	print "There are currently " + str(len(threads)) + " threads."
 
 def error(command):
-	print command + " is not a recongized command. Type help to see all reconized commands."
+	print command + " is not a recognized command. Type help to see all recognized commands."
 
 def exit(argument):
 	global looper
@@ -49,7 +49,7 @@ def exit(argument):
 def find(argument):
 	global inCommunity
 	if inCommunity:
-		print "Asking the peer community for resouces that have: " + argument + "."
+		print "Asking the peer community for resources that have: " + argument + "."
 		global mainThread
 		mainThread.addToCommandQueue(["find", argument])
 	else:
