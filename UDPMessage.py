@@ -6,10 +6,14 @@ class UDPMessage:
 		self.id1 = id1
 		self.id2 = id2
 		self.ttl = timeToLive
+		if message.length > 476:
+			#WRITE ERROR MESSAGE
+		elif message.length < 476:
+			#PADD THE END OF THE MESSAGE TO 476
 		self.message = message
 		
-	def getDataGramPacket():
+	def getDataGramPacket(self):
 	
-		dataGramPacket = self.id1 + "," + self.id2 + "," + self.ttl + "," + self.message
+		dataGramPacket = self.id1 + self.id2 + self.ttl + self.message
 	
 		return dataGramPacket
