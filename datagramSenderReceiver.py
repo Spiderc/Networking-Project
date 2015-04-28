@@ -11,7 +11,6 @@ class datagramSenderReceiver:
 			
 	def receive(self):
 		x = 0
-	
 		#look for incoming traffic, put in queue
 		
 		#Create a new socket (INET Sockets, Datagram Packets, UDP)
@@ -23,13 +22,9 @@ class datagramSenderReceiver:
 		
 		#Put in incomming queue
 		#Determine Loop Size
-			###receiveQueue.put(sock.recv(10240)) #need to look at this, going to string?
-		
-		#while(x<10000) #Determine length of the loop
-		while x < 10000:
-			print sock.recv(10240)
-			x = x + 1
-		
+		while x < 1000:
+			receiveQueue.put(sock.recv(10240)) #need to look at this, going to string?
+			##TEST CODE print sock.recv(10240)
 		
 	def send(self,datagramPacket):
 					
@@ -40,10 +35,10 @@ class datagramSenderReceiver:
 		sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
 		
 		#multicast send the datagramPacket
-		     ###sock.sendto(datagramPacket, (datagramSenderReceiver.multicastGroup, datagramSenderReceiver.datagramSocket))
+		sock.sendto(datagramPacket, (datagramSenderReceiver.multicastGroup, datagramSenderReceiver.datagramSocket))
 		
 		#TEST CODE for sending HI
-		sock.sendto("Hi", (datagramSenderReceiver.multicastGroup, datagramSenderReceiver.datagramSocket))
+		#####sock.sendto("Hi", (datagramSenderReceiver.multicastGroup, datagramSenderReceiver.datagramSocket))
 		
 		
 		
