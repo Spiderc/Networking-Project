@@ -1,7 +1,7 @@
 import socket
 import struct
 
-class datagramSenderReceiver:
+class DatagramSenderReceiver:
 	datagramSocket = 12345
 	multicastGroup = '140.209.121.187'
 
