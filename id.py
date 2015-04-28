@@ -7,8 +7,16 @@ class Id:
 	idQueue = Queue.Queue(maxQueueLength)
 	zeroId = bytearray(idLengthInBytes)
 
-	def __init__(self):
-		self.id = bytearray(os.urandom(Id.idLengthInBytes))
+	def __init__(self, value=None):
+		if value is None:
+			self.id = bytearray(os.urandom(Id.idLengthInBytes))
+		else:
+			if type(value) is bytearray:
+				if len(value) == Id.idLengthInBytes:
+					self.id = value
+				else:
+					print "The passed byte array is not the correct size."
+			#check other types
 
 	def idFactory(self):
 		if Id.idQueue.qsize() < Id.maxQueueLength:
