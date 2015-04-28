@@ -1,6 +1,8 @@
 import id
 import Queue
 import threading
+import UDPMessage
+import timeToLive
 
 class Main:
 	#Initialize sending & receiving queues
@@ -9,6 +11,7 @@ class Main:
 	receiveQueue = Queue.Queue(maxQueueLength)
 	commandQueue = Queue.Queue(maxQueueLength)
 	alertQueue = Queue.Queue(maxQueueLength)
+	requestMap = {}
 
 	def __init__(self):
 		self.running = True
@@ -64,4 +67,9 @@ class Main:
 		if command == "query":
 			pass #create a query datagram
 		elif command == "find":
-			pass #create a find datagram
+			id1 = id.Id()
+			id2 = id.Id()
+			ttl = timeToLive.TimeToLive()
+			message = UDPMessage.UDPMessage(id1=id1, id2=id2, timeToLive=ttl, message=argument)
+			Main.requestMap[id1] = message
+			addToSendQueue(self, message)
