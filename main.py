@@ -71,5 +71,5 @@ class Main:
 			id2 = id.Id()
 			ttl = timeToLive.TimeToLive()
 			message = UDPMessage.UDPMessage(id1=id1, id2=id2, timeToLive=ttl, message=argument)
-			Main.requestMap[id1] = message
+			Main.requestMap[id1] = arugment #adds the value to the requestMap dictionary
 			addToSendQueue(self, message)
