@@ -1,0 +1,4 @@
+cat1.jpg|This is a picture of a cat.
+cool file.txt|This file is pretty cool, you should check it out.
+rainbow.gif|This is an animated swirly rainbow pattern.
+printer.pdf|A user guide for the HP Officejet H470 Printer.
