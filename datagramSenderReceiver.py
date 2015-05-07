@@ -5,8 +5,7 @@ class DatagramSenderReceiver:
 	datagramSocket = 12345
 	multicastGroup = '140.209.121.187'
 
-	def __init__(self, sendQueue, receiveQueue):
-		self.sendQueue = sendQueue
+	def __init__(self, receiveQueue):
 		self.receiveQueue = receiveQueue
 			
 	def receive(self):
@@ -27,7 +26,6 @@ class DatagramSenderReceiver:
 			##TEST CODE print sock.recv(10240)
 		
 	def send(self,datagramPacket):
-					
 		#Create a new socket (INET Sockets, Datagram Packets, UDP)			
 		sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 		
@@ -40,7 +38,7 @@ class DatagramSenderReceiver:
 		#TEST CODE for sending HI
 		#####sock.sendto("Hi", (datagramSenderReceiver.multicastGroup, datagramSenderReceiver.datagramSocket))
 		
-		
-		
-		
+	def sendToPeer(self, datagramPacket, peerIP):
+		pass #TODO: fix this
+	
 		

@@ -77,6 +77,7 @@ def join(argument):
 		print "Joining the peer community"
 		mainThread.state = "joining"
 		#stop other threads? #TODO: fix this
+		#TODO: start listening to multicast
 		inCommunity = True
 
 def killAllThreads():
@@ -90,7 +91,7 @@ def leave(argument):
 	global mainThread
 	if inCommunity:
 		print "Leaving the peer community"
-		#close ports #TODO: fix this
+		#TODO: stop listening to multicast
 		mainThread.state = "not in"
 		inCommunity = False
 	else:
@@ -121,12 +122,14 @@ def stopThread(argument):
 print "Welcome to the Spanish Inquisition's implementation of the gossip protocol."
 looper = True
 inCommunity = False
-mainThread = main.Main()
+mainThread = main.Main() #TODO: give mainThread a name
+#TODO: create a new dictionary that has the information about all of our resources (create resource class obviously)
+#TODO: create listeners and start listening udp
 map = {"alerts": alerts, "createThread": createThread, "countThreads": countThreads, "exit": exit, "find": find, "help": help, "join": join, "leave": leave, "query": query, "stopThread": stopThread}
 threads = [mainThread]
 while looper:
 	if not mainThread.alertQueue.empty():
-		print "You have " + str(mainThread.alertQueue.qsize()) + " alerts. Type alerts to see them."
+		print "You have " + str(mainThread.alertQueue.qsize()) + " alerts. Type alerts to see them." #TODO see if there's a better way to let the user know about new alerts
 	input = raw_input(">")
 	command = input
 	argument = ""

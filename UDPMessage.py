@@ -6,7 +6,6 @@ class UDPMessage:
 	def __init__(self, id1=None, id2=None, timeToLive=None, message=None, byteArray=None):
 		idObject = id.Id()
 		ttlObject = timeToLive.TimeToLive()
-		print idObject.idLengthInBytes
 		
 		if byteArray == None:
 			if len(id1.id) != idObject.idLengthInBytes:
@@ -35,14 +34,11 @@ class UDPMessage:
 			self.message = message
 			
 		else:
-			self.byteArray = byteArray
+			self.byteArray = byteArray #TODO: split the bytearray into the different parts of the message
 		
 	def getDataGramPacket(self):
-	
 		if self.id1 != None:
-			dataGramPacket = self.id1 + self.id2 + self.ttl + self.message #TODO: fix this
-			
+			self.dataGramPacket = self.id1 + self.id2 + self.ttl + self.message
 		else:
-			dataGramPacket = byteArray
-	
+			self.dataGramPacket = byteArray
 		return dataGramPacket

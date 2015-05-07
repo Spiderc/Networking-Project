@@ -5,7 +5,7 @@ class TimeToLive:
 
 	def __init__(self, timeToLive=None):		
 		if timeToLive == None:
-			self.ttl = (random.getrandbits(4) + 10)
+			self.ttl = (random.getrandbits(4) + 10) #TODO: test this
 		else:
 			self.ttl = timeToLive
 		
