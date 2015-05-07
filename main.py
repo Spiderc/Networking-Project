@@ -12,27 +12,27 @@ class Main:
 	commandQueue = Queue.Queue(maxQueueLength)
 	alertQueue = Queue.Queue(maxQueueLength)
 	requestMap = {}
+	state = "not in" #current state of the threads
 
 	def __init__(self):
 		self.running = True
 		thread = threading.Thread(target=self.mainLoop)
 		thread.start()
-	
-	def getState(self):
-		result = "participate"
-		if False: #check the thing that i forgot the name for and if someone wants to join switch to join state
-			result = "join"
-		return result
 
 	def mainLoop(self):
 		#Create an id object
 		ids = id.Id()
 		while self.running:
-			state = self.getState()
-			if state == "join":
-				pass
-				#do join stuff here
-			elif state == "participate":
+			if Main.state == "join":
+				pass #TODO: fix this
+			if Main.state == "joining":
+				pass #TODO: fix this
+			if Main.state == "not in":
+				if not Main.commandQueue.empty():
+					Main.handleCommandQueue(self, Main.commandQueue.get())
+				else:
+					ids.idFactory()
+			elif Main.state == "participate":
 				if not Main.commandQueue.empty():
 					Main.handleCommandQueue(self, Main.commandQueue.get())
 				elif not Main.sendQueue.empty():
@@ -65,11 +65,16 @@ class Main:
 		command = object[0]
 		argument = object[1]
 		if command == "query":
-			pass #create a query datagram
+			id1 = id.Id()
+			id2 = id.Id()
+			ttl = timeToLive.TimeToLive()
+			message = UDPMessage.UDPMessage(id1=id1, id2=id2, timeToLive=ttl, message=argument) #TODO: fix this
+			Main.requestMap[id1] = ["query", argument] #adds the value to the requestMap dictionary
+			addToSendQueue(self, message) #TODO: fix this
 		elif command == "find":
 			id1 = id.Id()
 			id2 = id.Id()
 			ttl = timeToLive.TimeToLive()
-			message = UDPMessage.UDPMessage(id1=id1, id2=id2, timeToLive=ttl, message=argument)
-			Main.requestMap[id1] = arugment #adds the value to the requestMap dictionary
-			addToSendQueue(self, message)
+			message = UDPMessage.UDPMessage(id1=id1, id2=id2, timeToLive=ttl, message=argument) #TODO: fix this
+			Main.requestMap[id1] = ["find", argument] #adds the value to the requestMap dictionary
+			addToSendQueue(self, message) #TODO: fix this

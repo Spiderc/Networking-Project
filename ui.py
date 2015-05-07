@@ -48,9 +48,9 @@ def exit(argument):
 
 def find(argument):
 	global inCommunity
+	global mainThread
 	if inCommunity:
 		print "Asking the peer community for resources that have: " + argument + "."
-		global mainThread
 		mainThread.addToCommandQueue(["find", argument])
 	else:
 		print "You are not currently in the peer community so you can not find resources."		
@@ -70,11 +70,13 @@ def help(argument):
 
 def join(argument):
 	global inCommunity
+	global mainThread
 	if inCommunity:
 		print "You are already in the peer community"
 	else:
 		print "Joining the peer community"
-		#put the join stuff here
+		mainThread.state = "joining"
+		#stop other threads? #TODO: fix this
 		inCommunity = True
 
 def killAllThreads():
@@ -85,26 +87,28 @@ def killAllThreads():
 		
 def leave(argument):
 	global inCommunity
+	global mainThread
 	if inCommunity:
 		print "Leaving the peer community"
-		#close ports
+		#close ports #TODO: fix this
+		mainThread.state = "not in"
 		inCommunity = False
 	else:
 		print "You are not currently in the peer community."
 
 def query(argument):
 	global inCommunity
+	global mainThread
 	if inCommunity:
 		print "Querying the peer community for the resource: " + argument + "."
-		global mainThread
 		mainThread.addToCommandQueue(["query", argument])
 	else:
 		print "You are not currently in the peer community so you can not make queries."
 		
 def stopThread(argument):
+	global threads
 	try:
 		argument = int(argument)
-		global threads
 		if argument >= len(threads):
 			print "You cannot have less than 1 thread. The current number of threads is " + str(len(threads)) + "."
 		else:

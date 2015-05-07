@@ -11,25 +11,21 @@ class UDPMessage:
 		if byteArray == None:
 			if len(id1.id) != idObject.idLengthInBytes:
 				print "ERROR: Id1 is the wrong length"
-				pass
 			else:
 				self.id1 = id1
 				
 			if len(id2.id) != idObject.idLengthInBytes:
 				print "ERROR: Id2 is the wrong length"
-				pass
 			else:
 				self.id2 = id2
 
 			if len(timeToLive.ttl) != ttlObject.sizeInBytes:
 				print "ERROR: TTL is the wrong length"
-				pass
 			else:
 				self.ttl = timeToLive			
 			
 			if message.length > 476:
 				print "ERROR: Message is to long"
-				pass
 				#Send Error
 			elif message.length < 476:
 				while message.length < 476:
@@ -44,7 +40,7 @@ class UDPMessage:
 	def getDataGramPacket(self):
 	
 		if self.id1 != None:
-			dataGramPacket = self.id1 + self.id2 + self.ttl + self.message
+			dataGramPacket = self.id1 + self.id2 + self.ttl + self.message #TODO: fix this
 			
 		else:
 			dataGramPacket = byteArray
