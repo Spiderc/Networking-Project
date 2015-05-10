@@ -15,7 +15,7 @@ class Main:
 	requestMap = {}
 	state = "not in" #current state of the threads
 	peers = []
-	senderReceiver = datagramSenderReceiver.DatagramSenderReceiver(receieveQueue)
+	senderReceiver = datagramSenderReceiver.DatagramSenderReceiver(receiveQueue)
 
 	def __init__(self):
 		self.running = True
@@ -87,7 +87,7 @@ class Main:
 			
 	def handleSendQueue(self, object): #object is an array with the datagramPacket as the 0th element and the IP address that we got it from orginally as the 1st element
 		for peer in Main.peers:
-			if peer != "127.0.0.1" && peer != object[1]
+			if peer != "127.0.0.1" and peer != object[1]:
 				Main.senderReceiver.sendToPeer(object[0], peer)
 	
 	def handleReceiveQueue(self, object): #object is an array with the datagramPacket as the 0th element and the IP address that we got it from orginally as the 1st element
@@ -95,7 +95,7 @@ class Main:
 		if message.ttl > 0:
 			message.ttl.dec()
 			addToSendQueue(message.getDataGramPakcet(), object[1])
-			if message.id2 in Main.requestMap #check if the message is a responce to one of our messages
+			if message.id2 in Main.requestMap: #check if the message is a responce to one of our messages
 				if Main.requestMap[message.id2][0] == "query": #check if our message was a query
 					pass #TODO: add to the resource map the new parts we got. if we have all the parts, let the user know, otherwise ask for more
 				else: #otherwise it was a find
