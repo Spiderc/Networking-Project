@@ -15,7 +15,7 @@ class Main:
 	requestMap = {}
 	state = "not in" #current state of the threads
 	peers = []
-	senderReceiver = datagramSenderReceiver.DatagramSenderReceiver(receiveQueue)
+	senderReceiver = datagramSenderReceiver.DatagramSenderReceiver(receiveQueue, multicastQueue)
 
 	def __init__(self):
 		self.running = True
