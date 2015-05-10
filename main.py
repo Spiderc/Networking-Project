@@ -13,6 +13,8 @@ class Main:
 	commandQueue = Queue.Queue(maxQueueLength)
 	alertQueue = Queue.Queue(maxQueueLength)
 	requestMap = {}
+	#TODO: create a new dictionary that contains all of the resources we've found out about
+	requestedResources = {}
 	state = "not in" #current state of the threads
 	peers = []
 	senderReceiver = datagramSenderReceiver.DatagramSenderReceiver(receiveQueue, multicastQueue)
@@ -75,7 +77,7 @@ class Main:
 			ttl = timeToLive.TimeToLive()
 			message = UDPMessage.UDPMessage(id1=id1, id2=id2, timeToLive=ttl, message=argument)
 			Main.requestMap[id1] = ["query", argument] #adds the value to the requestMap dictionary, making note of the fact that it was a send
-			#TODO: add a new map that tracks how much of the resource we have
+			Main.requestedResources[id1] = []
 			addToSendQueue(self, [message.getDataGramPacket(), "127.0.0.1"]) #127.0.0.1 is used to show it came from the user
 		elif command == "find":
 			id1 = id.Id()

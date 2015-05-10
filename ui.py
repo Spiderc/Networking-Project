@@ -1,6 +1,8 @@
 import main
 import id
 import Queue
+import csv
+import resource
 
 def alerts(argument):
 	global mainThread
@@ -123,7 +125,11 @@ print "Welcome to the Spanish Inquisition's implementation of the gossip protoco
 looper = True
 inCommunity = False
 mainThread = main.Main() #TODO: give mainThread a name
-#TODO: create a new dictionary that has the information about all of our resources (create resource class obviously)
+resourcesMap = {}
+with open('resources/directory.txt', 'rb') as cvsfile:
+	text = csv.reader(cvsfile, delimiter = '|')
+	for row in text:
+		resourcesMap[row[0]] = resource.Resource(row[0], row[1])
 #TODO: create listeners and start listening udp
 map = {"alerts": alerts, "createThread": createThread, "countThreads": countThreads, "exit": exit, "find": find, "help": help, "join": join, "leave": leave, "query": query, "stopThread": stopThread}
 threads = [mainThread]
