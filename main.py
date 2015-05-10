@@ -8,6 +8,7 @@ import datagramSenderReceiver
 class Main:
 	#Initialize sending & receiving queues
 	maxQueueLength = 0 #0 means infinite queue size
+	multicastQueue = Queue.Queue(maxQueueLength)
 	sendQueue = Queue.Queue(maxQueueLength)
 	receiveQueue = Queue.Queue(maxQueueLength)
 	commandQueue = Queue.Queue(maxQueueLength)
@@ -38,8 +39,10 @@ class Main:
 				else:
 					ids.idFactory()
 			elif Main.state == "participate":
-				#TODO: first check to see if there's a message from the multicast group. if so, stop threads and change state to join
-				if not Main.commandQueue.empty():
+				if not Main.multicastQueue.empty():
+					pass
+					#TODO: first check to see if there's a message from the multicast group. if so, stop threads and change state to join
+				elif not Main.commandQueue.empty():
 					Main.handleCommandQueue(self, Main.commandQueue.get())
 				elif not Main.sendQueue.empty():
 					Main.handleSendQueue(self, Main.sendQueue.get())
