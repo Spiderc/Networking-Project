@@ -19,9 +19,10 @@ class DatagramSenderReceiver:
 				
 		#Put in incoming queue
 		while x < 1000:
-			datagramSenderReceiver.receiveQueue.put(sock.recv(10240)) #need to look at this, going to string?
-			##TEST CODE print sock.recv(10240)
-			x = x - 1;
+			##datagramSenderReceiver.receiveQueue.put(sock.recv(10240)) #need to look at this, going to string?
+			##TEST CODE 
+			print sock.recv(10240)
+			##x = x - 1;
 		
 	def send(self, ipAddress, datagramSocket, datagramPacket):
 		#Create a new socket (INET Sockets, Datagram Packets, UDP)			
