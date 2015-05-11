@@ -3,6 +3,7 @@ import timeToLive
 
 class UDPMessage:
 	
+	def __init__(self, id1=None, id2=None, ttl=None, message=None, byteArray=None, lastPacket = False):
 		idObject = id.Id()
 		ttlObject = timeToLive.TimeToLive()
 		
@@ -25,6 +26,7 @@ class UDPMessage:
 			if len(message) > 476:
 				print "ERROR: Message is to long"
 				#Send Error
+			elif len(message) < 476 and lastPacket == False:
 				while len(message) < 476:
 					#Pad Message
 					message = message + "|"
