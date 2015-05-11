@@ -20,19 +20,28 @@ class Main:
 	peers = []
 	senderReceiver = datagramSenderReceiver.DatagramSenderReceiver(receiveQueue, multicastQueue)
 
-	def __init__(self):
+	def __init__(self, threadName = None):
 		self.running = True
-		thread = threading.Thread(target=self.mainLoop)
-		thread.start()
+		self.thread = threading.Thread(target = self.mainLoop, name = threadName)
+		self.thread.start()
 
 	def mainLoop(self):
-		#Create an id object
-		ids = id.Id()
+		ids = id.Id() #Create an id object
 		while self.running:
 			if Main.state == "join":
-				pass #TODO: send our IP# to joiner, clear out peers array, set peers array with responce from joiner, set state back to participate
+				if self.thread.name != "monty":
+					while Main.state == "join":
+						pass
+				else:
+					pass
+					#TODO: send our IP# to joiner, clear out peers array, set peers array with responce from joiner, set state back to participate
 			if Main.state == "joining":
-				pass #TODO: listen for IP#s for x amount of time, assign people their new peers and send them, set peers, set state to participate
+				if self.thread.name != "monty":
+					while Main.state == "joining":
+						pass
+				else:
+					pass
+					#TODO: trap extra threads, listen for IP#s for x amount of time, assign people their new peers and send them, set peers, set state to participate
 			if Main.state == "not in":
 				if not Main.commandQueue.empty():
 					Main.handleCommandQueue(self, Main.commandQueue.get())
@@ -40,8 +49,7 @@ class Main:
 					ids.idFactory()
 			elif Main.state == "participate":
 				if not Main.multicastQueue.empty():
-					pass
-					#TODO: first check to see if there's a message from the multicast group. if so, stop threads and change state to join
+					Main.state = "join"
 				elif not Main.commandQueue.empty():
 					Main.handleCommandQueue(self, Main.commandQueue.get())
 				elif not Main.sendQueue.empty():
