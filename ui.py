@@ -124,7 +124,7 @@ def stopThread(argument):
 print "Welcome to the Spanish Inquisition's implementation of the gossip protocol."
 looper = True
 inCommunity = False
-mainThread = main.Main() #TODO: give mainThread a name
+mainThread = main.Main(threadName = "monty") #TODO: give mainThread a name
 resourcesMap = {}
 with open('resources/directory.txt', 'rb') as cvsfile:
 	text = csv.reader(cvsfile, delimiter = '|')
