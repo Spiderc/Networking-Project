@@ -3,31 +3,29 @@ import timeToLive
 
 class UDPMessage:
 	
-	def __init__(self, id1=None, id2=None, timeToLive=None, message=None, byteArray=None):
 		idObject = id.Id()
 		ttlObject = timeToLive.TimeToLive()
 		
 		if byteArray == None:
-			if len(id1.id) != idObject.idLengthInBytes:
+			if len(id1) != idObject.idLengthInBytes:
 				print "ERROR: Id1 is the wrong length"
 			else:
-				self.id1 = id1
+				self.id1 = id.Id(value = id1)
 				
-			if len(id2.id) != idObject.idLengthInBytes:
+			if len(id2) != idObject.idLengthInBytes:
 				print "ERROR: Id2 is the wrong length"
 			else:
-				self.id2 = id2
+				self.id2 = id.Id(value = id2)
 
-			if len(timeToLive.ttl) != ttlObject.sizeInBytes:
+			if len(ttl) != ttlObject.sizeInBytes:
 				print "ERROR: TTL is the wrong length"
 			else:
-				self.ttl = timeToLive			
+				self.ttl = timeToLive.TimeToLive(timeToLive = ttl)			
 			
-			if message.length > 476:
+			if len(message) > 476:
 				print "ERROR: Message is to long"
 				#Send Error
-			elif message.length < 476:
-				while message.length < 476:
+				while len(message) < 476:
 					#Pad Message
 					message = message + "|"
 					
@@ -35,10 +33,10 @@ class UDPMessage:
 			
 		else:
 			self.byteArray = byteArray
-			self.id1 = byteArray[0,idObject.sizeInBytes]
-			self.id2 = byteArray[idObject.sizeInBytes, (idObject.sizeInBytes + idObject.sizeInBytes)]
-			self.timeToLive = byteArray[(idObject.sizeInBytes + idObject.sizeInBytes),((idObject.sizeInBytes + idObject.sizeInBytes) + ttlObject.sizeInBytes)]
-			self.message = byteArray[((idObject.sizeInBytes + idObject.sizeInBytes) + ttlObject.sizeInBytes), len(byteArray)]
+			self.id1 = byteArray[0,idObject.idLengthInBytes]
+			self.id2 = byteArray[idObject.idLengthInBytes, (idObject.idLengthInBytes + idObject.idLengthInBytes)]
+			self.timeToLive = byteArray[(idObject.idLengthInBytes + idObject.idLengthInBytes),((idObject.idLengthInBytes + idObject.idLengthInBytes) + ttlObject.sizeInBytes)]
+			self.message = byteArray[((idObject.idLengthInBytes + idObject.idLengthInBytes) + ttlObject.sizeInBytes), len(byteArray)]
 		
 	def getDataGramPacket(self):
 		if self.id1 != None:
