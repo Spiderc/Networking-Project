@@ -41,7 +41,7 @@ class Main:
 						pass
 				else:
 					pass
-					#TODO: trap extra threads, listen for IP#s for x amount of time, assign people their new peers and send them, set peers, set state to participate
+					#TODO: listen for IP#s for x amount of time, assign people their new peers and send them, set peers, set state to participate
 			if Main.state == "not in":
 				if not Main.commandQueue.empty():
 					Main.handleCommandQueue(self, Main.commandQueue.get())
