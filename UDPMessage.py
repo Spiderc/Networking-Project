@@ -34,7 +34,11 @@ class UDPMessage:
 			self.message = message
 			
 		else:
-			self.byteArray = byteArray #TODO: split the bytearray into the different parts of the message
+			self.byteArray = byteArray
+			self.id1 = byteArray[0,idObject.sizeInBytes]
+			self.id2 = byteArray[idObject.sizeInBytes, (idObject.sizeInBytes + idObject.sizeInBytes)]
+			self.timeToLive = byteArray[(idObject.sizeInBytes + idObject.sizeInBytes),((idObject.sizeInBytes + idObject.sizeInBytes) + ttlObject.sizeInBytes)]
+			self.message = byteArray[((idObject.sizeInBytes + idObject.sizeInBytes) + ttlObject.sizeInBytes), len(byteArray)]
 		
 	def getDataGramPacket(self):
 		if self.id1 != None:
