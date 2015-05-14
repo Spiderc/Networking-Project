@@ -19,11 +19,14 @@ class Main:
 	state = "not in" #current state of the threads
 	peers = []
 	senderReceiver = datagramSenderReceiver.DatagramSenderReceiver(receiveQueue, multicastQueue)
+	resourcesMap = {}
 
-	def __init__(self, threadName = None):
+	def __init__(self, threadName = None, resourcesMap = None):
 		self.running = True
 		self.thread = threading.Thread(target = self.mainLoop, name = threadName)
 		self.thread.start()
+		if resourcesMap != None:
+			Main.resourcesMap = resourcesMap
 
 	def mainLoop(self):
 		ids = id.Id() #Create an id object
@@ -31,17 +34,19 @@ class Main:
 			if Main.state == "join":
 				if self.thread.name != "monty":
 					while Main.state == "join":
-						pass
+						pass #trap the threads that aren't monty
 				else:
 					pass
-					#TODO: send our IP# to joiner, clear out peers array, set peers array with responce from joiner, set state back to participate
+					#TODO: send our IP# to joiner, clear out peers array, set peers array with responce from joiner
+					Main.state = "participate"
 			if Main.state == "joining":
 				if self.thread.name != "monty":
 					while Main.state == "joining":
-						pass
+						pass #trap the thread that aren't monty
 				else:
 					pass
-					#TODO: listen for IP#s for x amount of time, assign people their new peers and send them, set peers, set state to participate
+					#TODO: listen for IP#s for x amount of time, assign people their new peers and send them, set peers
+					Main.state = "participate"
 			if Main.state == "not in":
 				if not Main.commandQueue.empty():
 					Main.handleCommandQueue(self, Main.commandQueue.get())
@@ -114,4 +119,7 @@ class Main:
 				else: #otherwise it was a find
 					pass #TODO: let the user know about what we found
 			else: #the message was not related to us
-				pass #TODO: check if the id2 matches the id of any of our resources, if so: treat as a query, otherwise: treat as a find
+				if message.id2 in Main.resourcesMap: #treat as a query
+					pass #TODO: create a response and put it in the sendQueue
+				else: #treat as a find
+					pass #TODO: create a response and put it in the sendQueue
