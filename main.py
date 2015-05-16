@@ -117,7 +117,10 @@ class Main:
 				if Main.requestMap[message.id2][0] == "query": #check if our message was a query
 					pass #TODO: add to the resource map the new parts we got. if we have all the parts, let the user know, otherwise ask for more
 				else: #otherwise it was a find
-					pass #TODO: let the user know about what we found
+					findMessageResponse = message.message[id.Id().idLengthInBytes:]
+					delimiter = findMessageResponse[:1]
+					responseArray = findMessageResponse.split(delimiter)
+					addToAlertQueue("Found a resource. The description of the resource is " + responseArray[6] + ". The length in bytes is " + responseArray[4] + ". The MimeType is " + responseArray[2] + "."
 			else: #the message was not related to us
 				if message.id2 in Main.resourcesMap: #treat as a query
 					pass #TODO: create a response and put it in the sendQueue
