@@ -124,4 +124,9 @@ class Main:
 				else: #treat as a find
 					for key, resource in Main.resourcesMap: #loop through all of our resources
 						if message.message in resource.fileName or message.message in resource.description: #check if we have a matching resource
-							pass #TODO: create a response and put it in the sendQueue
+							responseId1 = id.Id()
+							responseId2 = id.Id()
+							responseTtl = timeToLive.TimeToLive()
+							responseMessage = id.Id().getAsString() + "|" + resource.mimeType + "|" + len(resource.fileBytes) + "|" + resource.description
+							responseDatagram = UDPMessage.UDPMessage(id1=responseId1, id2=responseId2, ttl=responseTtl, message=responseMessage);
+							addToSendQueue([responseDatagram, "127.0.0.1"])
