@@ -65,19 +65,19 @@ class Main:
 				else:
 					ids.idFactory()
 				
-	def addToSendQueue(self, object):
+	def addToSendQueue(self, object): #object is an array with the datagramPacket as the 0th element and the IP address that we got it from orginally as the 1st element
 		global sendQueue
 		Main.sendQueue.put(object)
 		
-	def addToRecieveQueue(self, object):
+	def addToRecieveQueue(self, object): #object is an array with the datagramPacket as the 0th element and the IP address that we got it from orginally as the 1st element
 		global receiveQueue
 		Main.receiveQueue.put(object)
 		
-	def addToCommandQueue(self, object):
+	def addToCommandQueue(self, object): #object is a command from the user with the command type as the 0th element and the parameter of the search as the 1st element
 		global commandQueue
 		Main.commandQueue.put(object)
 		
-	def addToAlertQueue(self, object):
+	def addToAlertQueue(self, object): #object is a string intended for the user to see
 		global commandQueue
 		Main.alertQueue.put(object)
 		
@@ -112,7 +112,7 @@ class Main:
 		message = UDPMessage.UDPMessage(byteArray=object)
 		if message.ttl > 0:
 			message.ttl.dec()
-			addToSendQueue(message.getDataGramPakcet(), object[1])
+			addToSendQueue(message.getDataGramPakcet(), object[1]) #no matter what we pass the message onto our peers
 			if message.id2 in Main.requestMap: #check if the message is a responce to one of our messages
 				if Main.requestMap[message.id2][0] == "query": #check if our message was a query
 					pass #TODO: add to the resource map the new parts we got. if we have all the parts, let the user know, otherwise ask for more
@@ -122,4 +122,6 @@ class Main:
 				if message.id2 in Main.resourcesMap: #treat as a query
 					pass #TODO: create a response and put it in the sendQueue
 				else: #treat as a find
-					pass #TODO: create a response and put it in the sendQueue
+					for key, resource in Main.resourcesMap: #loop through all of our resources
+						if message.message in resource.fileName or message.message in resource.description: #check if we have a matching resource
+							pass #TODO: create a response and put it in the sendQueue
