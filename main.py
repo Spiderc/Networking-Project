@@ -101,12 +101,14 @@ class Main:
 		argument = object[1]
 		if command == "query":
 			id1 = id.Id()
-			id2 = id.Id()
-			ttl = timeToLive.TimeToLive()
-			message = UDPMessage.UDPMessage(id1=id1, id2=id2, timeToLive=ttl, message=argument)
-			Main.requestMap[id1] = ["query", argument] #adds the value to the requestMap dictionary, making note of the fact that it was a send
-			Main.requestedResources[id1] = []
-			addToSendQueue(self, [message.getDataGramPacket(), "127.0.0.1"]) #127.0.0.1 is used to show it came from the user
+			id2 = id.Id(value=argument)
+			if id2 in foundResources:
+				foundResource = foundResources[id2]
+				Main.requestMap[id1] = ["query", id2] #adds the value to the requestMap dictionary, making note of the fact that it was a send
+				Main.requestedResources[id1] = [foundResource[0], foundResource[1], foundResource[2], , 0, time.time()]
+				requestPartNumber(self, 0, id2)
+			else:
+				addToAlertQueue(self, "Unknown resource: " + argument)
 		elif command == "find":
 			id1 = id.Id()
 			id2 = id.Id()

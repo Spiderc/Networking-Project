@@ -16,7 +16,8 @@ class Id:
 					self.id = value
 				else:
 					print "The passed byte array is not the correct size."
-			#check other types
+			else:
+				print "The passed constructor for an Id is not valid"
 
 	def idFactory(self):
 		if Id.idQueue.qsize() < Id.maxQueueLength:
