@@ -1,4 +1,5 @@
 import random
+import struct
 
 class TimeToLive:
 	sizeInBytes = 4;
@@ -13,7 +14,7 @@ class TimeToLive:
 		self.ttl = self.ttl - 1;
 		
 	def getAsBytes(self):
-		return bytearray(self.ttl)
+		return struct.pack("I", self.ttl)
 	
 	def isIncorrectLength(self):
 		return type(self.ttl) is not long

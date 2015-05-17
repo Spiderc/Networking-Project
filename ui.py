@@ -87,7 +87,7 @@ def killAllThreads():
 	size = len(threads)
 	for i in range(0, size):
 		threads.pop().stopThread()
-		
+
 def leave(argument):
 	global inCommunity
 	global mainThread
