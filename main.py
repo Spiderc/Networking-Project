@@ -4,6 +4,7 @@ import threading
 import UDPMessage
 import timeToLive
 import datagramSenderReceiver
+import time
 
 class Main:
 	#Initialize sending & receiving queues
@@ -15,7 +16,7 @@ class Main:
 	alertQueue = Queue.Queue(maxQueueLength) #queue that contains messages that the user should see
 	requestMap = {} #dictionary that contains all of the find and query requests that the user has made
 	foundResources = {} #dictionary of resources that have been returned to us from a find request. An array with [description, lengthInBytes, MimeType]
-	requestedResources = {} #dictionary of the resources that we have done a query request for and their bytearrays
+	requestedResources = {} #dictionary of the resources that we have done a query request for and their bytearrays. An array with [description, lengthInBytes, MimeType, bytesReceived, lastPartRequested, lastTimeRequested]
 	state = "not in" #current state of the threads
 	peers = [] #an array of the ip addresses of our current peers
 	senderReceiver = datagramSenderReceiver.DatagramSenderReceiver(receiveQueue, multicastQueue)
@@ -61,9 +62,12 @@ class Main:
 					Main.handleSendQueue(self, Main.sendQueue.get())
 				elif not Main.receiveQueue.empty():
 					Main.handleReceiveQueue(self, Main.receiveQueue.get())
-				#elif #TODO: check to see if we have any resources that we queried for that aren't complete
 				else:
-					ids.idFactory()
+					requestedResource = checkRequestedResources(self)
+					if requestedResource != id.Id().zeroId:
+						requestPartNumber(self, requestedResources[requestedResource][4], requestedResource)
+					else:
+						ids.idFactory()
 				
 	def addToSendQueue(self, object): #object is an array with the datagramPacket as the 0th element and the IP address that we got it from orginally as the 1st element
 		global sendQueue
@@ -83,6 +87,14 @@ class Main:
 		
 	def stopThread(self):
 		self.running = False
+		
+	def checkRequestedResources(self): #check to see if we need to resend a query request for one of the resources we requested
+		result = id.Id().zeroId
+		for key, requestedResouce in Main.requestedResources:
+			if requestedResource[5] + 10 > time.time():
+				result = key
+				break
+		return result
 		
 	def handleCommandQueue(self, object): #object is a command from the user with the command type as the 0th element and the parameter of the search as the 1st element
 		command = object[0]
