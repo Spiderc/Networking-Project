@@ -30,9 +30,9 @@ class Main:
 			Main.resourcesMap = resourcesMap
 			
 		if threadName == "monty":
-			listenerThread = threading.Thread(target = Main.senderReceiver.receive)
+			self.listenerThread = threading.Thread(target = Main.senderReceiver.receive)
 			print "listenerthread"
-			listenerThread.start()
+			self.listenerThread.start()
 		
 	def mainLoop(self):
 		ids = id.Id() #Create an id object

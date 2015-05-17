@@ -18,6 +18,7 @@ class DatagramSenderReceiver:
 		#Put in incoming queue
 		while True:
 			print "Working1"
+			print sock.recv(10240)
 			self.receiveQueue.put(sock.recv(10240))
 			print "Working2"
 		
