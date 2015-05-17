@@ -105,7 +105,7 @@ class Main:
 			if id2 in foundResources:
 				foundResource = foundResources[id2]
 				Main.requestMap[id1] = ["query", id2] #adds the value to the requestMap dictionary, making note of the fact that it was a send
-				Main.requestedResources[id1] = [foundResource[0], foundResource[1], foundResource[2], , 0, time.time()]
+				Main.requestedResources[id1] = [foundResource[0], foundResource[1], foundResource[2], "", 0, time.time()]
 				requestPartNumber(self, 0, id2, requestId=id1)
 			else:
 				addToAlertQueue(self, "Unknown resource: " + argument)
