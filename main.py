@@ -120,7 +120,7 @@ class Main:
 					findMessageResponse = message.message[id.Id().idLengthInBytes:]
 					delimiter = findMessageResponse[:1]
 					responseArray = findMessageResponse.split(delimiter)
-					addToAlertQueue("Found a resource. The description of the resource is " + responseArray[6] + ". The length in bytes is " + responseArray[4] + ". The MimeType is " + responseArray[2] + "."
+					addToAlertQueue("Found a resource. The description of the resource is " + responseArray[5] + ". The length in bytes is " + responseArray[3] + ". The MimeType is " + responseArray[1] + "."
 			else: #the message was not related to us
 				if message.id2 in Main.resourcesMap: #treat as a query
 					pass #TODO: create a response and put it in the sendQueue
