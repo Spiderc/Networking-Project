@@ -18,7 +18,7 @@ class Main:
 	foundResources = {} #dictionary of resources that have been returned to us from a find request. An array with [description, lengthInBytes, MimeType]
 	requestedResources = {} #dictionary of the resources that we have done a query request for and their bytearrays. An array with [description, lengthInBytes, MimeType, bytesReceived, lastPartRequested, lastTimeRequested]
 	state = "not in" #current state of the threads
-	peers = ["10.20.51.220", "10.20.74.0"] #an array of the ip addresses of our current peers
+	peers = ["10.20.74.0"] #an array of the ip addresses of our current peers
 	senderReceiver = datagramSenderReceiver.DatagramSenderReceiver(receiveQueue)
 	resourcesMap = {} #our resources that we currently have
 
@@ -179,7 +179,7 @@ class Main:
 		requestedResource[5] = time.time()
 		Main.addToSendQueue(self, [resourcePartMessage, "127.0.0.1"])
 		
-	def removePadding(self, message)
+	def removePadding(self, message):
 		return message.replace(message[-1:],"")		
 		
 
