@@ -84,7 +84,6 @@ def join(argument):
 
 def killAllThreads():
 	global threads
-	threads[0].listenerThread.stopThread()
 	size = len(threads)
 	for i in range(0, size):
 		threads.pop().stopThread()

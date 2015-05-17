@@ -18,7 +18,7 @@ class Main:
 	foundResources = {} #dictionary of resources that have been returned to us from a find request. An array with [description, lengthInBytes, MimeType]
 	requestedResources = {} #dictionary of the resources that we have done a query request for and their bytearrays. An array with [description, lengthInBytes, MimeType, bytesReceived, lastPartRequested, lastTimeRequested]
 	state = "not in" #current state of the threads
-	peers = ["10.20.51.220", "10.20.60.75"] #an array of the ip addresses of our current peers
+	peers = ["10.20.51.220", "10.20.74.0"] #an array of the ip addresses of our current peers
 	senderReceiver = datagramSenderReceiver.DatagramSenderReceiver(receiveQueue)
 	resourcesMap = {} #our resources that we currently have
 
@@ -31,7 +31,6 @@ class Main:
 			
 		if threadName == "monty":
 			self.listenerThread = threading.Thread(target = Main.senderReceiver.receive)
-			print "listenerthread"
 			self.listenerThread.start()
 		
 	def mainLoop(self):
@@ -90,6 +89,10 @@ class Main:
 		
 	def stopThread(self):
 		self.running = False
+		
+	def stopListening(self):
+		if self.thread.name == "monty":
+			self.listenerThread.stopListening()
 		
 	def changeState(self, newState):
 		Main.state = newState
