@@ -126,20 +126,20 @@ class Main:
 		message = UDPMessage.UDPMessage(byteArray=object)
 		if message.ttl > 0:
 			message.ttl.dec()
-			addToSendQueue(message.getDataGramPakcet(), object[1]) #no matter what we pass the message onto our peers
+			addToSendQueue(self,message.getDataGramPakcet(), object[1]) #no matter what we pass the message onto our peers
 			if message.id2 in Main.requestMap: #check if the message is a response to one of our messages
 				if Main.requestMap[message.id2][0] == "query": #check if our message was a query
-					
-					
-					Main.requestedResources[4] = Main.requestedResources[4] + message[20,436]
-				
-				
-					pass #TODO: add to the resource map the new parts we got. if we have all the parts, let the user know, otherwise ask for more
+					Main.requestedResources[message.id1][3] = Main.requestedResources[message.id1][3] + "" + message.message[20:len(message)]
+					Main.requestedResources[message.id1][4] = message.message[16:20]			
+					if len(message) < 456
+						addToAlertQueue(self,"Resource #" + message.id1 + " has been received.")					
+					else
+						requestPartNumber(self, Main.requestedResources[message.id1][4], message.id1)
 				else: #otherwise it was a find
 					findMessageResponse = message.message[id.Id().idLengthInBytes:]
 					delimiter = findMessageResponse[:1]
 					responseArray = findMessageResponse.split(delimiter)
-					addToAlertQueue("Found resource #" + message.id2.getAsString() + ". The description of the resource is " + responseArray[5] + ". The length in bytes is " + responseArray[3] + ". The MimeType is " + responseArray[1] + "."
+					addToAlertQueue(self,"Found resource #" + message.id2.getAsString() + ". The description of the resource is " + responseArray[5] + ". The length in bytes is " + responseArray[3] + ". The MimeType is " + responseArray[1] + "."
 					Main.foundResources[message.id2] = [responseArray[5], responseArray[3], responseArray[1])
 			else: #the message was not related to us
 				if message.id2 in Main.resourcesMap: #treat as a query
@@ -148,7 +148,7 @@ class Main:
 					resoucePartTtl = timeToLive.TimeToLive()
 					resourcePart = id.Id() + partNumber + requestedResource.fileBytes[456*int(partNumber):456*(int(partNumber)+1)]
 					resourcePartMessage = UDPMessage.UDPMessage(id1=message.id2, id2=message.id1, ttl=resourcePartTtl, message=resourcePart)
-					addToSendQueue([resourcePartMessage, "127.0.0.1"])
+					addToSendQueue(self,[resourcePartMessage, "127.0.0.1"])
 				else: #treat as a find
 					for key, resource in Main.resourcesMap: #loop through all of our resources
 						if message.message in resource.fileName or message.message in resource.description: #check if we have a matching resource
@@ -157,14 +157,15 @@ class Main:
 							responseTtl = timeToLive.TimeToLive()
 							responseMessage = id.Id().getAsString() + "|" + resource.mimeType + "|" + len(resource.fileBytes) + "|" + resource.description
 							responseDatagram = UDPMessage.UDPMessage(id1=responseId1, id2=responseId2, ttl=responseTtl, message=responseMessage);
-							addToSendQueue([responseDatagram, "127.0.0.1"])
+							addToSendQueue(self,[responseDatagram, "127.0.0.1"])
 
 	def  requestPartNumber(self, partNumber, resourceID)
 		requestedResource = Main.requestedResources[resourceID]
 		resoucePartTtl = timeToLive.TimeToLive()
-		resourcePart = id.Id() + partNumber + requestedResource.fileBytes[456*int(partNumber):456*(int(partNumber)+1)]
-		resourcePartMessage = UDPMessage.UDPMessage(id1=message.id2, id2=message.id1, ttl=resourcePartTtl, message=resourcePart)
-		addToSendQueue([resourcePartMessage, "127.0.0.1"])
+		resourcePart = id.Id() +""+ partNumber
+		resourcePartMessage = UDPMessage.UDPMessage(id.ID(), resourceID, ttl=resourcePartTtl, message=resourcePart)
+		requestedResource[5] = time.time()
+		addToSendQueue(self, [resourcePartMessage, "127.0.0.1"])
 
 		
 		
