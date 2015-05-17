@@ -8,18 +8,18 @@ import datagramSenderReceiver
 class Main:
 	#Initialize sending & receiving queues
 	maxQueueLength = 0 #0 means infinite queue size
-	multicastQueue = Queue.Queue(maxQueueLength)
-	sendQueue = Queue.Queue(maxQueueLength)
-	receiveQueue = Queue.Queue(maxQueueLength)
-	commandQueue = Queue.Queue(maxQueueLength)
-	alertQueue = Queue.Queue(maxQueueLength)
-	requestMap = {}
-	#TODO: create a new dictionary that contains all of the resources we've found out about
-	requestedResources = {}
+	multicastQueue = Queue.Queue(maxQueueLength) #queue that keeps messages from the multicast group
+	sendQueue = Queue.Queue(maxQueueLength) #queue that keeps messages waiting to be sent out
+	receiveQueue = Queue.Queue(maxQueueLength) #queue that keeps messages that we've recieved but haven't processed yet
+	commandQueue = Queue.Queue(maxQueueLength) #queue that contains commands from the user
+	alertQueue = Queue.Queue(maxQueueLength) #queue that contains messages that the user should see
+	requestMap = {} #dictionary that contains all of the find and query requests that the user has made
+	foundResources = {} #dictionary of resources that have been returned to us from a find request. An array with [description, lengthInBytes, MimeType]
+	requestedResources = {} #dictionary of the resources that we have done a query request for and their bytearrays
 	state = "not in" #current state of the threads
-	peers = []
+	peers = [] #an array of the ip addresses of our current peers
 	senderReceiver = datagramSenderReceiver.DatagramSenderReceiver(receiveQueue, multicastQueue)
-	resourcesMap = {}
+	resourcesMap = {} #our resources that we currently have
 
 	def __init__(self, threadName = None, resourcesMap = None):
 		self.running = True
@@ -37,7 +37,7 @@ class Main:
 						pass #trap the threads that aren't monty
 				else:
 					pass
-					#TODO: send our IP# to joiner, clear out peers array, set peers array with responce from joiner
+					#TODO: send our IP# to joiner, clear out peers array, set peers array with response from joiner
 					Main.state = "participate"
 			if Main.state == "joining":
 				if self.thread.name != "monty":
@@ -105,7 +105,7 @@ class Main:
 			
 	def handleSendQueue(self, object): #object is an array with the datagramPacket as the 0th element and the IP address that we got it from orginally as the 1st element
 		for peer in Main.peers:
-			if peer != "127.0.0.1" and peer != object[1]:
+			if peer != object[1]:
 				Main.senderReceiver.sendToPeer(object[0], peer)
 	
 	def handleReceiveQueue(self, object): #object is an array with the datagramPacket as the 0th element and the IP address that we got it from orginally as the 1st element
@@ -113,16 +113,23 @@ class Main:
 		if message.ttl > 0:
 			message.ttl.dec()
 			addToSendQueue(message.getDataGramPakcet(), object[1]) #no matter what we pass the message onto our peers
-			if message.id2 in Main.requestMap: #check if the message is a responce to one of our messages
+			if message.id2 in Main.requestMap: #check if the message is a response to one of our messages
 				if Main.requestMap[message.id2][0] == "query": #check if our message was a query
 					pass #TODO: add to the resource map the new parts we got. if we have all the parts, let the user know, otherwise ask for more
 				else: #otherwise it was a find
 					findMessageResponse = message.message[id.Id().idLengthInBytes:]
 					delimiter = findMessageResponse[:1]
 					responseArray = findMessageResponse.split(delimiter)
-					addToAlertQueue("Found a resource. The description of the resource is " + responseArray[5] + ". The length in bytes is " + responseArray[3] + ". The MimeType is " + responseArray[1] + "."
+					addToAlertQueue("Found resource #" + message.id2.getAsString() + ". The description of the resource is " + responseArray[5] + ". The length in bytes is " + responseArray[3] + ". The MimeType is " + responseArray[1] + "."
+					Main.foundResources[message.id2] = [responseArray[5], responseArray[3], responseArray[1])
 			else: #the message was not related to us
 				if message.id2 in Main.resourcesMap: #treat as a query
+					partNumber = message.message[id.Id().idLengthInBytes:id.Id.idLengthInBytes + 4] #the part number of the requested resource
+					requestedResource = Main.resourcesMap[message.id2]
+					resoucePartTtl = timeToLive.TimeToLive()
+					resourcePart = id.Id() + partNumber + requestedResource.fileBytes[456*int(partNumber):456*(int(partNumber)+1)]
+					resourcePartMessage = UDPMessage.UDPMessage(id1=message.id2, id2=message.id1, ttl=resourcePartTtl, message=resourcePart)
+					addToSendQueue([resourcePartMessage, "127.0.0.1"])
 					pass #TODO: create a response and put it in the sendQueue
 				else: #treat as a find
 					for key, resource in Main.resourcesMap: #loop through all of our resources
