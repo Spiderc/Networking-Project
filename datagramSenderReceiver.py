@@ -7,20 +7,16 @@ class DatagramSenderReceiver:
 		self.receiveQueue = receiveQueue
 			
 	def receive(self):
-		x = 0		
+		sockName = 0		
 		#Create a new socket (INET Sockets, Datagram Packets, UDP)
 		sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 		#Set socket options - Prevent TIME_WAIT state inorder to reuse the address
 		sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		#Bind socket to IP and Port
-		sock.bind(("127.0.0.1", 12345))
-				
+		sock.bind(("10.20.74.0", 12345))
 		#Put in incoming queue
 		while True:
-			print "Working1"
-			print sock.recv(10240)
 			self.receiveQueue.put(sock.recv(10240))
-			print "Working2"
 		
 	def send(self, ipAddress, datagramSocket, datagramPacket):
 		#Create a new socket (INET Sockets, Datagram Packets, UDP)			
