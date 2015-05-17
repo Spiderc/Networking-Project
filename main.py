@@ -131,16 +131,16 @@ class Main:
 				if Main.requestMap[message.id2][0] == "query": #check if our message was a query
 					Main.requestedResources[message.id1][3] = Main.requestedResources[message.id1][3] + "" + message.message[20:len(message)]
 					Main.requestedResources[message.id1][4] = message.message[16:20]			
-					if len(message) < 456
+					if len(message) < 456:
 						addToAlertQueue(self,"Resource #" + message.id1 + " has been received.")					
-					else
+					else:
 						requestPartNumber(self, Main.requestedResources[message.id1][4], message.id1)
 				else: #otherwise it was a find
 					findMessageResponse = message.message[id.Id().idLengthInBytes:]
 					delimiter = findMessageResponse[:1]
 					responseArray = findMessageResponse.split(delimiter)
 					addToAlertQueue(self,"Found resource #" + message.id2.getAsString() + ". The description of the resource is " + responseArray[5] + ". The length in bytes is " + responseArray[3] + ". The MimeType is " + responseArray[1] + "."
-					Main.foundResources[message.id2] = [responseArray[5], responseArray[3], responseArray[1])
+					Main.foundResources[message.id2] = (responseArray[5], responseArray[3], responseArray[1])
 			else: #the message was not related to us
 				if message.id2 in Main.resourcesMap: #treat as a query
 					partNumber = message.message[id.Id().idLengthInBytes:id.Id.idLengthInBytes + 4] #the part number of the requested resource
