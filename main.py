@@ -130,7 +130,6 @@ class Main:
 					resourcePart = id.Id() + partNumber + requestedResource.fileBytes[456*int(partNumber):456*(int(partNumber)+1)]
 					resourcePartMessage = UDPMessage.UDPMessage(id1=message.id2, id2=message.id1, ttl=resourcePartTtl, message=resourcePart)
 					addToSendQueue([resourcePartMessage, "127.0.0.1"])
-					pass #TODO: create a response and put it in the sendQueue
 				else: #treat as a find
 					for key, resource in Main.resourcesMap: #loop through all of our resources
 						if message.message in resource.fileName or message.message in resource.description: #check if we have a matching resource
