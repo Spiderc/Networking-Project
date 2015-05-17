@@ -106,7 +106,7 @@ class Main:
 				foundResource = foundResources[id2]
 				Main.requestMap[id1] = ["query", id2] #adds the value to the requestMap dictionary, making note of the fact that it was a send
 				Main.requestedResources[id1] = [foundResource[0], foundResource[1], foundResource[2], , 0, time.time()]
-				requestPartNumber(self, 0, id2)
+				requestPartNumber(self, 0, id2, requestId=id1)
 			else:
 				addToAlertQueue(self, "Unknown resource: " + argument)
 		elif command == "find":
@@ -159,11 +159,11 @@ class Main:
 							responseDatagram = UDPMessage.UDPMessage(id1=responseId1, id2=responseId2, ttl=responseTtl, message=responseMessage);
 							addToSendQueue(self,[responseDatagram, "127.0.0.1"])
 
-	def  requestPartNumber(self, partNumber, resourceID)
+	def  requestPartNumber(self, partNumber, resourceID, requestId=id.Id())
 		requestedResource = Main.requestedResources[resourceID]
 		resoucePartTtl = timeToLive.TimeToLive()
 		resourcePart = id.Id() +""+ partNumber
-		resourcePartMessage = UDPMessage.UDPMessage(id.ID(), resourceID, ttl=resourcePartTtl, message=resourcePart)
+		resourcePartMessage = UDPMessage.UDPMessage(requestId, resourceID, ttl=resourcePartTtl, message=resourcePart)
 		requestedResource[5] = time.time()
 		addToSendQueue(self, [resourcePartMessage, "127.0.0.1"])
 
