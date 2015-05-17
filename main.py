@@ -18,8 +18,8 @@ class Main:
 	foundResources = {} #dictionary of resources that have been returned to us from a find request. An array with [description, lengthInBytes, MimeType]
 	requestedResources = {} #dictionary of the resources that we have done a query request for and their bytearrays. An array with [description, lengthInBytes, MimeType, bytesReceived, lastPartRequested, lastTimeRequested]
 	state = "not in" #current state of the threads
-	peers = ["10.20.51.220", "10.20.74.0"] #an array of the ip addresses of our current peers
-	senderReceiver = datagramSenderReceiver.DatagramSenderReceiver(receiveQueue, multicastQueue)
+	peers = ["10.20.51.220", "10.20.60.75"] #an array of the ip addresses of our current peers
+	senderReceiver = datagramSenderReceiver.DatagramSenderReceiver(receiveQueue)
 	resourcesMap = {} #our resources that we currently have
 
 	def __init__(self, threadName = None, resourcesMap = None):
@@ -28,7 +28,11 @@ class Main:
 		self.thread.start()
 		if resourcesMap != None:
 			Main.resourcesMap = resourcesMap
-
+			
+		if threadName == "monty":
+			listenerThread = threading.Thread(target = Main.senderReceiver.receive)
+			listenerThread.start()
+		
 	def mainLoop(self):
 		ids = id.Id() #Create an id object
 		while self.running:
@@ -125,6 +129,7 @@ class Main:
 				print "Sending to " + peer
 	
 	def handleReceiveQueue(self, object): #object is an array with the datagramPacket as the 0th element and the IP address that we got it from orginally as the 1st element
+		print "Handling"
 		message = UDPMessage.UDPMessage(byteArray=object)
 		if message.ttl > 0:
 			message.ttl.dec()

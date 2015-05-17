@@ -3,23 +3,21 @@ import struct
 
 class DatagramSenderReceiver:
 
-	def __init__(self, receiveQueue, multicastQueue):
+	def __init__(self, receiveQueue):
 		self.receiveQueue = receiveQueue
-		self.multicastQueue = multicastQueue
 			
-	def receive(self, ipAddress, datagramSocket):
+	def receive(self):
 		x = 0		
 		#Create a new socket (INET Sockets, Datagram Packets, UDP)
 		sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, socket.IPPROTO_UDP)
 		#Set socket options - Prevent TIME_WAIT state inorder to reuse the address
 		sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		#Bind socket to IP and Port
-		sock.bind((ipAddress, datagramSocket))
+		sock.bind(("127.0.0.1", 12345))
 				
 		#Put in incoming queue
 		while x < 1000:
-			DatagramSenderReceiver.receiveQueue.put(sock.recv(10240)) 
-			##TEST CODE print sock.recv(10240)
+			self.receiveQueue.put(sock.recv(10240)) 
 			x = x - 1;
 		
 	def send(self, ipAddress, datagramSocket, datagramPacket):
@@ -31,6 +29,3 @@ class DatagramSenderReceiver:
 		
 		#multicast send the datagramPacket
 		sock.sendto(datagramPacket, (ipAddress, datagramSocket))
-		
-		#TEST CODE for sending HI
-		#####sock.sendto("Hi", (self.multicastGroup, self.datagramSocket))	
