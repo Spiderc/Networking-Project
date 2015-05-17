@@ -160,7 +160,7 @@ class Main:
 					Main.addToSendQueue(self,[resourcePartMessage, "127.0.0.1"])
 				else: #treat as a find
 					for key, resource in Main.resourcesMap: #loop through all of our resources
-						if message.message in resource.fileName or message.message in resource.description: #check if we have a matching resource
+						if removePadding(message.message) in resource.fileName or removePadding(message.message) in resource.description: #check if we have a matching resource
 							responseId1 = id.Id()
 							responseId2 = id.Id()
 							responseTtl = timeToLive.TimeToLive()
@@ -175,6 +175,10 @@ class Main:
 		resourcePartMessage = UDPMessage.UDPMessage(requestId, resourceID, ttl=resourcePartTtl, message=resourcePart)
 		requestedResource[5] = time.time()
 		Main.addToSendQueue(self, [resourcePartMessage, "127.0.0.1"])
+		
+	def removePadding(self, message)
+		return message.replace(message[-1:],"")		
+		
 
 		
 		
