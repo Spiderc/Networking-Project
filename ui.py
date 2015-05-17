@@ -77,7 +77,7 @@ def join(argument):
 		print "You are already in the peer community"
 	else:
 		print "Joining the peer community"
-		mainThread.state = "joining"
+		mainThread.changeState("join")
 		#stop other threads? #TODO: fix this
 		#TODO: start listening to multicast
 		inCommunity = True
@@ -94,7 +94,7 @@ def leave(argument):
 	if inCommunity:
 		print "Leaving the peer community"
 		#TODO: stop listening to multicast
-		mainThread.state = "not in"
+		mainThread.changeState("not in")
 		inCommunity = False
 	else:
 		print "You are not currently in the peer community."

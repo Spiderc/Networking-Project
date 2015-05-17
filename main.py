@@ -18,7 +18,7 @@ class Main:
 	foundResources = {} #dictionary of resources that have been returned to us from a find request. An array with [description, lengthInBytes, MimeType]
 	requestedResources = {} #dictionary of the resources that we have done a query request for and their bytearrays. An array with [description, lengthInBytes, MimeType, bytesReceived, lastPartRequested, lastTimeRequested]
 	state = "not in" #current state of the threads
-	peers = ["10.20.51.220"] #an array of the ip addresses of our current peers
+	peers = ["10.20.51.220", "10.20.74.0"] #an array of the ip addresses of our current peers
 	senderReceiver = datagramSenderReceiver.DatagramSenderReceiver(receiveQueue, multicastQueue)
 	resourcesMap = {} #our resources that we currently have
 
@@ -37,25 +37,23 @@ class Main:
 					while Main.state == "join":
 						pass #trap the threads that aren't monty
 				else:
-					pass
 					#TODO: send our IP# to joiner, clear out peers array, set peers array with response from joiner
-					Main.state = "participate"
-			if Main.state == "joining":
+					Main.changeState(self, "participate")
+			elif Main.state == "joining":
 				if self.thread.name != "monty":
 					while Main.state == "joining":
 						pass #trap the thread that aren't monty
 				else:
-					pass
 					#TODO: listen for IP#s for x amount of time, assign people their new peers and send them, set peers
-					Main.state = "participate"
-			if Main.state == "not in":
+					Main.changeState(self, "participate")
+			elif Main.state == "not in":
 				if not Main.commandQueue.empty():
 					Main.handleCommandQueue(self, Main.commandQueue.get())
 				else:
 					ids.idFactory()
 			elif Main.state == "participate":
 				if not Main.multicastQueue.empty():
-					Main.state = "join"
+					Main.changeState(self, "join")
 				elif not Main.commandQueue.empty():
 					Main.handleCommandQueue(self, Main.commandQueue.get())
 				elif not Main.sendQueue.empty():
@@ -63,7 +61,7 @@ class Main:
 				elif not Main.receiveQueue.empty():
 					Main.handleReceiveQueue(self, Main.receiveQueue.get())
 				else:
-					requestedResource = checkRequestedResources(self)
+					requestedResource = Main.checkRequestedResources(self)
 					if requestedResource != id.Id().zeroId:
 						requestPartNumber(self, requestedResources[requestedResource][4], requestedResource)
 					else:
@@ -87,6 +85,9 @@ class Main:
 		
 	def stopThread(self):
 		self.running = False
+		
+	def changeState(self, newState):
+		Main.state = newState
 		
 	def checkRequestedResources(self): #check to see if we need to resend a query request for one of the resources we requested
 		result = id.Id().zeroId
@@ -120,7 +121,8 @@ class Main:
 	def handleSendQueue(self, object): #object is an array with the datagramPacket as the 0th element and the IP address that we got it from orginally as the 1st element
 		for peer in Main.peers:
 			if peer != object[1]:
-				Main.senderReceiver.sendToPeer(object[0], peer)
+				Main.senderReceiver.send(peer, 12345, object[0])
+				print "Sending to " + peer
 	
 	def handleReceiveQueue(self, object): #object is an array with the datagramPacket as the 0th element and the IP address that we got it from orginally as the 1st element
 		message = UDPMessage.UDPMessage(byteArray=object)
