@@ -130,7 +130,6 @@ class Main:
 				print "Sending to " + peer
 	
 	def handleReceiveQueue(self, object): #object is an array with the datagramPacket as the 0th element and the IP address that we got it from orginally as the 1st element
-		print "Handling"
 		message = UDPMessage.UDPMessage(byteArray=object)
 		if message.ttl > 0:
 			message.ttl.dec()

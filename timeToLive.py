@@ -8,7 +8,7 @@ class TimeToLive:
 		if timeToLive == None:
 			self.ttl = (random.getrandbits(4) + 10)
 		else:
-			self.ttl = timeToLive
+			self.ttl = struct.unpack("I", timeToLive)
 		
 	def dec(self):
 		self.ttl = self.ttl - 1;

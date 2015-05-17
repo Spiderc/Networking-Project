@@ -35,10 +35,10 @@ class UDPMessage:
 			
 		else:
 			self.byteArray = byteArray
-			self.id1 = byteArray[0,idObject.idLengthInBytes]
-			self.id2 = byteArray[idObject.idLengthInBytes, (idObject.idLengthInBytes + idObject.idLengthInBytes)]
-			self.timeToLive = byteArray[(idObject.idLengthInBytes + idObject.idLengthInBytes),((idObject.idLengthInBytes + idObject.idLengthInBytes) + ttlObject.sizeInBytes)]
-			self.message = byteArray[((idObject.idLengthInBytes + idObject.idLengthInBytes) + ttlObject.sizeInBytes), len(byteArray)]
+			self.id1 = id.Id(value = bytearray(byteArray[0:idObject.idLengthInBytes]))
+			self.id2 = id.Id(value = bytearray(byteArray[idObject.idLengthInBytes: (idObject.idLengthInBytes + idObject.idLengthInBytes)]))
+			self.ttl = timeToLive.TimeToLive(timeToLive = bytearray(byteArray[(idObject.idLengthInBytes + idObject.idLengthInBytes):((idObject.idLengthInBytes + idObject.idLengthInBytes) + ttlObject.sizeInBytes)]))
+			self.message = byteArray[((idObject.idLengthInBytes + idObject.idLengthInBytes) + ttlObject.sizeInBytes): len(byteArray)]
 		
 	def getDataGramPacket(self):
 		if self.id1 != None:
