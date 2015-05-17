@@ -127,12 +127,12 @@ class Main:
 			addToSendQueue(self,message.getDataGramPakcet(), object[1]) #no matter what we pass the message onto our peers
 			if message.id2 in Main.requestMap: #check if the message is a response to one of our messages
 				if Main.requestMap[message.id2][0] == "query": #check if our message was a query
-					
-					
-					Main.requestedResources[4] = Main.requestedResources[4] + message[20,436]
-				
-				
-					pass #TODO: add to the resource map the new parts we got. if we have all the parts, let the user know, otherwise ask for more
+					Main.requestedResources[message.id1][3] = Main.requestedResources[message.id1][3] + "" + message.message[20:len(message)]
+					Main.requestedResources[message.id1][4] = message.message[16:20]			
+					if len(message) < 456
+						addToAlertQueue(self,"Resource #" + message.id1 + " has been received.")					
+					else
+						requestPartNumber(self, Main.requestedResources[message.id1][4], message.id1)
 				else: #otherwise it was a find
 					findMessageResponse = message.message[id.Id().idLengthInBytes:]
 					delimiter = findMessageResponse[:1]
