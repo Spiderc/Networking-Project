@@ -131,7 +131,6 @@ with open('resources/directory.txt', 'rb') as cvsfile:
 		res = resource.Resource(row[0], row[1])
 		resourcesMap[res.id] = res
 mainThread = main.Main(threadName = "monty", resourcesMap = resourcesMap)
-#TODO: create listeners and start listening udp
 map = {"alerts": alerts, "createThread": createThread, "countThreads": countThreads, "exit": exit, "find": find, "help": help, "join": join, "leave": leave, "query": query, "stopThread": stopThread}
 threads = [mainThread]
 while looper:
