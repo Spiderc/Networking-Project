@@ -99,7 +99,8 @@ class Main:
 		
 	def checkRequestedResources(self): #check to see if we need to resend a query request for one of the resources we requested
 		result = id.Id().zeroId
-		for key, requestedResouce in Main.requestedResources:
+		for key in Main.requestedResources:
+			requestedResource = Main.requestedResources[key]
 			if requestedResource[5] + 10 > time.time():
 				result = key
 				break
@@ -125,31 +126,31 @@ class Main:
 			message = UDPMessage.UDPMessage(id1=id1, id2=id2, ttl=ttl, message=argument)
 			Main.requestMap[id1] = ["find", argument] #adds the value to the requestMap dictionary, making note of the fact that it was a find
 			Main.addToSendQueue(self, [message.getDataGramPacket(), "127.0.0.1"]) #127.0.0.1 is used to show it came from the user
-			
+
 	def handleSendQueue(self, object): #object is an array with the datagramPacket as the 0th element and the IP address that we got it from orginally as the 1st element
+		print type(object[0])
 		for peer in Main.peers:
 			if peer != object[1]:
 				Main.senderReceiver.send(peer, 12345, object[0])
-				print "Sending to " + peer
 	
 	def handleReceiveQueue(self, object): #object is an array with the datagramPacket as the 0th element and the IP address that we got it from orginally as the 1st element
 		message = UDPMessage.UDPMessage(byteArray=object)
 		if message.ttl > 0:
 			message.ttl.dec()
-			Main.addToSendQueue(self,message.getDataGramPakcet(), object[1]) #no matter what we pass the message onto our peers
+			Main.addToSendQueue(self,[message.getDataGramPacket(), object[1]]) #no matter what we pass the message onto our peers
 			if message.id2 in Main.requestMap: #check if the message is a response to one of our messages
 				if Main.requestMap[message.id2][0] == "query": #check if our message was a query
 					Main.requestedResources[message.id1][3] = Main.requestedResources[message.id1][3] + "" + message.message[20:len(message)]
 					Main.requestedResources[message.id1][4] = message.message[16:20]			
 					if len(message) < 456:
-						addToAlertQueue(self,"Resource #" + message.id1 + " has been received.")					
+						Main.addToAlertQueue(self,"Resource #" + message.id1 + " has been received.")					
 					else:
 						requestPartNumber(self, Main.requestedResources[message.id1][4], message.id1)
 				else: #otherwise it was a find
 					findMessageResponse = message.message[id.Id().idLengthInBytes:]
 					delimiter = findMessageResponse[:1]
 					responseArray = findMessageResponse.split(delimiter)
-					addToAlertQueue(self,"Found resource #" + message.id2.getAsString() + ". The description of the resource is " + responseArray[5] + ". The length in bytes is " + responseArray[3] + ". The MimeType is " + responseArray[1] + ".")
+					Main.addToAlertQueue(self,"Found resource #" + message.id2.getAsString() + ". The description of the resource is " + responseArray[5] + ". The length in bytes is " + responseArray[3] + ". The MimeType is " + responseArray[1] + ".")
 					Main.foundResources[message.id2][0] = responseArray[5] #resource description
 					Main.foundResources[message.id2][1] = responseArray[3] #resource length in bytes
 					Main.foundResources[message.id2][2] = responseArray[1] #resource MimeType
@@ -160,16 +161,17 @@ class Main:
 					resoucePartTtl = timeToLive.TimeToLive()
 					resourcePart = id.Id() + partNumber + requestedResource.fileBytes[456*int(partNumber):456*(int(partNumber)+1)]
 					resourcePartMessage = UDPMessage.UDPMessage(id1=message.id2, id2=message.id1, ttl=resourcePartTtl, message=resourcePart)
-					Main.addToSendQueue(self,[resourcePartMessage, "127.0.0.1"])
+					Main.addToSendQueue(self,[resourcePartMessage.getDataGramPacket(), "127.0.0.1"])
 				else: #treat as a find
-					for key, resource in Main.resourcesMap: #loop through all of our resources
-						if removePadding(message.message) in resource.fileName or removePadding(message.message) in resource.description: #check if we have a matching resource
+					for key in Main.resourcesMap: #loop through all of our resources
+						resource = Main.resourcesMap[key]
+						if Main.removePadding(self, message.message) in resource.fileName or Main.removePadding(self,message.message) in resource.description: #check if we have a matching resource
 							responseId1 = id.Id()
 							responseId2 = id.Id()
 							responseTtl = timeToLive.TimeToLive()
-							responseMessage = id.Id().getAsString() + "|" + resource.mimeType + "|" + len(resource.fileBytes) + "|" + resource.description
+							responseMessage = id.Id().getAsString() + "|" + resource.mimeType + "|" + str(len(resource.fileBytes)) + "|" + resource.description
 							responseDatagram = UDPMessage.UDPMessage(id1=responseId1, id2=responseId2, ttl=responseTtl, message=responseMessage);
-							Main.addToSendQueue(self,[responseDatagram, "127.0.0.1"])
+							Main.addToSendQueue(self,[responseDatagram.getDataGramPacket(), "127.0.0.1"])
 
 	def requestPartNumber(self, partNumber, resourceID, requestId=id.Id()):
 		requestedResource = Main.requestedResources[resourceID]
@@ -177,7 +179,7 @@ class Main:
 		resourcePart = id.Id() +""+ partNumber
 		resourcePartMessage = UDPMessage.UDPMessage(requestId, resourceID, ttl=resourcePartTtl, message=resourcePart)
 		requestedResource[5] = time.time()
-		Main.addToSendQueue(self, [resourcePartMessage, "127.0.0.1"])
+		Main.addToSendQueue(self, [resourcePartMessage.getDataGramPacket(), "127.0.0.1"])
 		
 	def removePadding(self, message):
 		return message.replace(message[-1:],"")		

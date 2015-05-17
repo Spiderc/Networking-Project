@@ -14,7 +14,7 @@ class DatagramSenderReceiver:
 		#Set socket options - Prevent TIME_WAIT state inorder to reuse the address
 		sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		#Bind socket to IP and Port
-		sock.bind(("10.20.74.0", 12345))
+		sock.bind(("10.20.60.75", 12345))
 		#Put in incoming queue
 		while self.running:
 			self.receiveQueue.put(sock.recv(10240))

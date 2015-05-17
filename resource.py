@@ -11,4 +11,4 @@ class Resource:
 		file = open("resources/" + fileName)
 		self.fileBytes = bytearray(file.read())
 		file.close()
-		self.mimeType = mimetypes.guess_type(fileName)
+		self.mimeType = mimetypes.guess_type(fileName)[0]
