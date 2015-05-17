@@ -31,6 +31,7 @@ class Main:
 			
 		if threadName == "monty":
 			listenerThread = threading.Thread(target = Main.senderReceiver.receive)
+			print "listenerthread"
 			listenerThread.start()
 		
 	def mainLoop(self):

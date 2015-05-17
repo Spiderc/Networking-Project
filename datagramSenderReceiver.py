@@ -16,9 +16,10 @@ class DatagramSenderReceiver:
 		sock.bind(("127.0.0.1", 12345))
 				
 		#Put in incoming queue
-		while x < 1000:
-			self.receiveQueue.put(sock.recv(10240)) 
-			x = x - 1;
+		while True:
+			print "Working1"
+			self.receiveQueue.put(sock.recv(10240))
+			print "Working2"
 		
 	def send(self, ipAddress, datagramSocket, datagramPacket):
 		#Create a new socket (INET Sockets, Datagram Packets, UDP)			
