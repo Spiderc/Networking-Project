@@ -42,6 +42,9 @@ class Id:
 		while Id.idQueue.qsize() > length:
 			Id.idQueue.get() #probably a better way of doing this
 	
+	def getAsBytes(self):
+		return bytearray(self.id)
+	
 	def getAsHex(self):
 		return self.getAsString().encode("hex")
 		
@@ -53,3 +56,6 @@ class Id:
 
 	def isZero(self):
 		return self.id == Id.zeroId
+		
+	def isIncorrectLength(self):
+		return len(self.id) != Id.idLengthInBytes
