@@ -127,6 +127,11 @@ class Main:
 			addToSendQueue(message.getDataGramPakcet(), object[1]) #no matter what we pass the message onto our peers
 			if message.id2 in Main.requestMap: #check if the message is a response to one of our messages
 				if Main.requestMap[message.id2][0] == "query": #check if our message was a query
+					
+					
+					Main.requestedResources[4] = Main.requestedResources[4] + message[20,436]
+				
+				
 					pass #TODO: add to the resource map the new parts we got. if we have all the parts, let the user know, otherwise ask for more
 				else: #otherwise it was a find
 					findMessageResponse = message.message[id.Id().idLengthInBytes:]
@@ -151,3 +156,15 @@ class Main:
 							responseMessage = id.Id().getAsString() + "|" + resource.mimeType + "|" + len(resource.fileBytes) + "|" + resource.description
 							responseDatagram = UDPMessage.UDPMessage(id1=responseId1, id2=responseId2, ttl=responseTtl, message=responseMessage);
 							addToSendQueue([responseDatagram, "127.0.0.1"])
+
+	def  requestPartNumber(self, partNumber, resourceID)
+		requestedResource = Main.requestedResources[resourceID]
+		resoucePartTtl = timeToLive.TimeToLive()
+		resourcePart = id.Id() + partNumber + requestedResource.fileBytes[456*int(partNumber):456*(int(partNumber)+1)]
+		resourcePartMessage = UDPMessage.UDPMessage(id1=message.id2, id2=message.id1, ttl=resourcePartTtl, message=resourcePart)
+		addToSendQueue([resourcePartMessage, "127.0.0.1"])
+
+		
+		
+		
+	
