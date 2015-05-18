@@ -46,6 +46,9 @@ class Id:
 	
 	def getAsBytes(self):
 		return bytearray(self.id)
+	
+	def getAsHex(self):
+		return self.getAsString().encode("hex")
 		
 	def getAsString(self):
 		return str(self.id)
