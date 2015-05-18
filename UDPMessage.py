@@ -42,6 +42,7 @@ class UDPMessage:
 		
 	def getDataGramPacket(self):
 		if self.id1 != None:
+			print self.id1.getAsHex()
 			self.dataGramPacket = self.id1.getAsBytes() + self.id2.getAsBytes() + self.ttl.getAsBytes() + bytearray(self.message)
 		else:
 			self.dataGramPacket = self.byteArray

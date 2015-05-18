@@ -156,7 +156,9 @@ class Main:
 						Main.foundResources[message.id2.getAsHex()] = [responseArray[3], responseArray[2], responseArray[1]]
 			else: #the message was not related to us
 				if message.id2.getAsHex() in Main.resourcesMap: #treat as a query
+					print "handling"
 					partNumber = message.message[id.Id().idLengthInBytes:id.Id.idLengthInBytes + 4] #the part number of the requested resource
+					print partNumber
 					requestedResource = Main.resourcesMap[message.id2.getAsHex()]
 					resoucePartTtl = timeToLive.TimeToLive()
 					if 456*(int(partNumber)) < int(requestedResource.getSizeInBytes()):
@@ -171,16 +173,18 @@ class Main:
 						resource = Main.resourcesMap[key]
 						if Main.removePadding(self,message.message) in resource.description: #check if we have a matching resource
 							responseId1 = resource.id
+							print responseId1.getAsHex()
+							print id.Id(value=responseId1.getAsHex()).getAsHex()
 							responseId2 = message.id1
 							responseTtl = timeToLive.TimeToLive()
-							responseMessage = id.Id().getAsString() + "|" + resource.mimeType + "|" + resource.getSizeInBytes() + "|" + resource.description
+							responseMessage = id.Id().getAsBytes() + "|" + resource.mimeType + "|" + resource.getSizeInBytes() + "|" + resource.description
 							responseDatagram = UDPMessage.UDPMessage(id1=responseId1, id2=responseId2, ttl=responseTtl, message=responseMessage);
 							Main.addToSendQueue(self,[responseDatagram.getDataGramPacket(), "127.0.0.1"])
 
 	def requestPartNumber(self, partNumber, resourceId, requestId=id.Id()):
 		requestedResource = Main.requestedResources[resourceId.getAsHex()]
 		resourcePartTtl = timeToLive.TimeToLive()
-		resourcePart = id.Id().getAsString() +""+ str(partNumber)
+		resourcePart = id.Id().getAsBytes() +""+ str(partNumber)
 		resourcePartMessage = UDPMessage.UDPMessage(requestId, resourceId, ttl=resourcePartTtl, message=resourcePart)
 		requestedResource[5] = time.time()
 		Main.addToSendQueue(self, [resourcePartMessage.getDataGramPacket(), "127.0.0.1"])
