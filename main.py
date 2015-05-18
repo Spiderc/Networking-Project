@@ -151,12 +151,11 @@ class Main:
 						findMessageResponse = message.message[id.Id().idLengthInBytes:]
 						delimiter = findMessageResponse[:1]
 						responseArray = findMessageResponse.split(delimiter)
-						Main.addToAlertQueue(self,"Found resource " + message.id2.getAsHex() + ". The description of the resource is " + responseArray[3] + " The length in bytes is " + responseArray[5] + ". The MimeType is " + responseArray[1] + ".")
-						Main.foundResources[message.id2.getAsHex()] = [responseArray[3], responseArray[5], responseArray[1]]
+						Main.addToAlertQueue(self,"Found resource " + message.id2.getAsHex() + ". The description of the resource is " + responseArray[3] + " The length in bytes is " + responseArray[2] + ". The MimeType is " + responseArray[1] + ".")
+						Main.foundResources[message.id2.getAsHex()] = [responseArray[3], responseArray[2], responseArray[1]]
 			else: #the message was not related to us
 				if message.id2 in Main.resourcesMap: #treat as a query
 					partNumber = message.message[id.Id().idLengthInBytes:id.Id.idLengthInBytes + 4] #the part number of the requested resource
-					print partNumber
 					requestedResource = Main.resourcesMap[message.id2.getAsHex()]
 					resoucePartTtl = timeToLive.TimeToLive()
 					resourcePart = id.Id().getAsBytes() + partNumber + requestedResource.fileBytes[456*int(partNumber):456*(int(partNumber)+1)]
@@ -169,10 +168,7 @@ class Main:
 							responseId1 = resource.id
 							responseId2 = message.id1
 							responseTtl = timeToLive.TimeToLive()
-							print type(id.Id().getAsString())
-							print type(resource.mimeType)
-							print type(resource.getSizeInBytes())
-							print type(resource.description)
+							print resource.getSizeInBytes()
 							responseMessage = id.Id().getAsString() + "|" + resource.mimeType + "|" + resource.getSizeInBytes() + "|" + resource.description
 							responseDatagram = UDPMessage.UDPMessage(id1=responseId1, id2=responseId2, ttl=responseTtl, message=responseMessage);
 							Main.addToSendQueue(self,[responseDatagram.getDataGramPacket(), "127.0.0.1"])
