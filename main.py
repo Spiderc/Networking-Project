@@ -100,7 +100,7 @@ class Main:
 		result = id.Id(value=id.Id().zeroId)
 		for key in Main.requestedResources:
 			requestedResource = Main.requestedResources[key]
-			if requestedResource[5] + 10 > time.time():
+			if requestedResource[5] + 10 < time.time():
 				result = id.Id(value=key)
 				break
 		return result
@@ -155,7 +155,7 @@ class Main:
 						Main.addToAlertQueue(self,"Found resource " + message.id2.getAsHex() + ". The description of the resource is " + responseArray[3] + " The length in bytes is " + responseArray[2] + ". The MimeType is " + responseArray[1] + ".")
 						Main.foundResources[message.id2.getAsHex()] = [responseArray[3], responseArray[2], responseArray[1]]
 			else: #the message was not related to us
-				if message.id2 in Main.resourcesMap: #treat as a query
+				if message.id2.getAsHex() in Main.resourcesMap: #treat as a query
 					partNumber = message.message[id.Id().idLengthInBytes:id.Id.idLengthInBytes + 4] #the part number of the requested resource
 					requestedResource = Main.resourcesMap[message.id2.getAsHex()]
 					resoucePartTtl = timeToLive.TimeToLive()
@@ -178,7 +178,6 @@ class Main:
 							Main.addToSendQueue(self,[responseDatagram.getDataGramPacket(), "127.0.0.1"])
 
 	def requestPartNumber(self, partNumber, resourceId, requestId=id.Id()):
-		print partNumber
 		requestedResource = Main.requestedResources[resourceId.getAsHex()]
 		resourcePartTtl = timeToLive.TimeToLive()
 		resourcePart = id.Id().getAsString() +""+ str(partNumber)
