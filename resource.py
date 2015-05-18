@@ -12,8 +12,6 @@ class Resource:
 		self.fileBytes = open(("resources/" + fileName),"rb").read()
 		#file.close()
 		self.mimeType = mimetypes.guess_type(fileName)[0]
-		print self.fileName
-		print Resource.getSizeInBytes(self)
 
 	def getSizeInBytes(self):
 		return str(len(self.fileBytes))

@@ -18,7 +18,7 @@ class Main:
 	foundResources = {} #dictionary of resources that have been returned to us from a find request. An array with [description, lengthInBytes, MimeType]
 	requestedResources = {} #dictionary of the resources that we have done a query request for and their bytearrays. An array with [description, lengthInBytes, MimeType, bytesReceived, lastPartRequested, lastTimeRequested]
 	state = "not in" #current state of the threads
-	peers = ["140.209.121.191"] #an array of the ip addresses of our current peers
+	peers = ["10.20.74.0"] #an array of the ip addresses of our current peers
 	senderReceiver = datagramSenderReceiver.DatagramSenderReceiver(receiveQueue)
 	resourcesMap = {} #our resources that we currently have
 
@@ -66,7 +66,7 @@ class Main:
 				else:
 					requestedResource = Main.checkRequestedResources(self)
 					if requestedResource != id.Id().zeroId:
-						requestPartNumber(self, requestedResources[requestedResource][4], requestedResource)
+						requestPartNumber(self, id.Id(value=Main.requestedResources[requestedResource][4]), requestedResource)
 					else:
 						ids.idFactory()
 				
@@ -145,7 +145,7 @@ class Main:
 					if len(message) < 456:
 						Main.addToAlertQueue(self,"Resource #" + message.id1 + " has been received.")					
 					else:
-						requestPartNumber(self, Main.requestedResources[message.id1][4], message.id1)
+						requestPartNumber(self, id.Id(value=Main.requestedResources[message.id1][4]), message.id1)
 				else: #otherwise it was a find
 					if message.id2.getAsHex() not in Main.foundResources: #we don't need to put it in the foundResources dictionary if it's already there
 						findMessageResponse = message.message[id.Id().idLengthInBytes:]
@@ -172,7 +172,6 @@ class Main:
 							responseId1 = resource.id
 							responseId2 = message.id1
 							responseTtl = timeToLive.TimeToLive()
-							print resource.getSizeInBytes()
 							responseMessage = id.Id().getAsString() + "|" + resource.mimeType + "|" + resource.getSizeInBytes() + "|" + resource.description
 							responseDatagram = UDPMessage.UDPMessage(id1=responseId1, id2=responseId2, ttl=responseTtl, message=responseMessage);
 							Main.addToSendQueue(self,[responseDatagram.getDataGramPacket(), "127.0.0.1"])
