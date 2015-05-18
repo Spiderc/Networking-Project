@@ -65,8 +65,8 @@ class Main:
 					Main.handleReceiveQueue(self, Main.receiveQueue.get())
 				else:
 					requestedResource = Main.checkRequestedResources(self)
-					if requestedResource != id.Id().zeroId:
-						requestPartNumber(self, id.Id(value=Main.requestedResources[requestedResource][4]), requestedResource)
+					if requestedResource.getAsHex() != id.Id(value=id.Id().zeroId).getAsHex():
+						Main.requestPartNumber(self, partNumber=Main.requestedResources[requestedResource.getAsHex()][4], resourceId=requestedResource)
 					else:
 						ids.idFactory()
 				
@@ -97,11 +97,11 @@ class Main:
 		Main.state = newState
 		
 	def checkRequestedResources(self): #check to see if we need to resend a query request for one of the resources we requested
-		result = id.Id().zeroId
+		result = id.Id(value=id.Id().zeroId)
 		for key in Main.requestedResources:
 			requestedResource = Main.requestedResources[key]
 			if requestedResource[5] + 10 > time.time():
-				result = key
+				result = id.Id(value=key)
 				break
 		return result
 		
@@ -115,9 +115,10 @@ class Main:
 			if id2.getAsHex() in Main.foundResources:
 				foundResource = Main.foundResources[id2.getAsHex()]
 				Main.requestMap[id1.getAsHex()] = ["query", id2.getAsHex()] #adds the value to the requestMap dictionary, making note of the fact that it was a send
-				Main.requestedResources[id1.getAsHex()] = [foundResource[0], foundResource[1], foundResource[2], "", 0, time.time()]
+				Main.requestedResources[id2.getAsHex()] = [foundResource[0], foundResource[1], foundResource[2], "", 1, time.time()]
+				print "test"
 				Main.requestPartNumber(self, partNumber=1, resourceId=id2, requestId=id1)
-				print requestedResources
+				print Main.requestedResources
 			else:
 				Main.addToAlertQueue(self, "Unknown resource: " + argument)
 		elif command == "find":
@@ -141,7 +142,7 @@ class Main:
 			if message.id2.getAsHex() in Main.requestMap: #check if the message is a response to one of our messages
 				if Main.requestMap[message.id2.getAsHex()][0] == "query": #check if our message was a query
 					Main.requestedResources[message.id1.getAsHex()][3] = Main.requestedResources[message.id1][3] + "" + message.message[20:len(message)]
-					Main.requestedResources[message.id1.getAsHex()][4] = message.message[16:20]			
+					Main.requestedResources[message.id1.getAsHex()][4] = int(message.message[16:20])
 					if len(message) < 456:
 						Main.addToAlertQueue(self,"Resource #" + message.id1 + " has been received.")					
 					else:
@@ -177,9 +178,10 @@ class Main:
 							Main.addToSendQueue(self,[responseDatagram.getDataGramPacket(), "127.0.0.1"])
 
 	def requestPartNumber(self, partNumber, resourceId, requestId=id.Id()):
+		print partNumber
 		requestedResource = Main.requestedResources[resourceId.getAsHex()]
-		resoucePartTtl = timeToLive.TimeToLive()
-		resourcePart = id.Id().getAsBytes() +""+ partNumber
+		resourcePartTtl = timeToLive.TimeToLive()
+		resourcePart = id.Id().getAsString() +""+ str(partNumber)
 		resourcePartMessage = UDPMessage.UDPMessage(requestId, resourceId, ttl=resourcePartTtl, message=resourcePart)
 		requestedResource[5] = time.time()
 		Main.addToSendQueue(self, [resourcePartMessage.getDataGramPacket(), "127.0.0.1"])
