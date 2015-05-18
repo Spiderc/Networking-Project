@@ -18,7 +18,7 @@ class Main:
 	foundResources = {} #dictionary of resources that have been returned to us from a find request. An array with [description, lengthInBytes, MimeType]
 	requestedResources = {} #dictionary of the resources that we have done a query request for and their bytearrays. An array with [description, lengthInBytes, MimeType, bytesReceived, lastPartRequested, lastTimeRequested]
 	state = "not in" #current state of the threads
-	peers = ["10.20.74.0"] #an array of the ip addresses of our current peers
+	peers = ["140.209.121.191"] #an array of the ip addresses of our current peers
 	senderReceiver = datagramSenderReceiver.DatagramSenderReceiver(receiveQueue)
 	resourcesMap = {} #our resources that we currently have
 
@@ -116,7 +116,7 @@ class Main:
 				foundResource = Main.foundResources[id2.getAsHex()]
 				Main.requestMap[id1.getAsHex()] = ["query", id2.getAsHex()] #adds the value to the requestMap dictionary, making note of the fact that it was a send
 				Main.requestedResources[id1.getAsHex()] = [foundResource[0], foundResource[1], foundResource[2], "", 0, time.time()]
-				Main.requestPartNumber(self, partNumber=0, resourceId=id2, requestId=id1)
+				Main.requestPartNumber(self, partNumber=1, resourceId=id2, requestId=id1)
 				print requestedResources
 			else:
 				Main.addToAlertQueue(self, "Unknown resource: " + argument)
@@ -158,8 +158,12 @@ class Main:
 					partNumber = message.message[id.Id().idLengthInBytes:id.Id.idLengthInBytes + 4] #the part number of the requested resource
 					requestedResource = Main.resourcesMap[message.id2.getAsHex()]
 					resoucePartTtl = timeToLive.TimeToLive()
-					resourcePart = id.Id().getAsBytes() + partNumber + requestedResource.fileBytes[456*int(partNumber):456*(int(partNumber)+1)]
-					resourcePartMessage = UDPMessage.UDPMessage(id1=message.id2, id2=message.id1, ttl=resourcePartTtl, message=resourcePart)
+					if 456*(int(partNumber)) < int(requestedResource.getSizeInBytes()):
+						resourcePart = id.Id().getAsBytes() + partNumber + requestedResource.fileBytes[456*(int(partNumber)-1):456*(int(partNumber))]
+						resourcePartMessage = UDPMessage.UDPMessage(id1=message.id2, id2=message.id1, ttl=resourcePartTtl, message=resourcePart)
+					else:
+						resourcePart = id.Id().getAsBytes() + partNumber + requestedResource.fileBytes[456*(int(partNumber)-1):]
+						resourcePartMessage = UDPMessage.UDPMessage(id1=message.id2, id2=message.id1, ttl=resourcePartTtl, message=resourcePart, lastPacket=True)
 					Main.addToSendQueue(self,[resourcePartMessage.getDataGramPacket(), "127.0.0.1"])
 				else: #treat as a find
 					for key in Main.resourcesMap: #loop through all of our resources
@@ -176,7 +180,7 @@ class Main:
 	def requestPartNumber(self, partNumber, resourceId, requestId=id.Id()):
 		requestedResource = Main.requestedResources[resourceId.getAsHex()]
 		resoucePartTtl = timeToLive.TimeToLive()
-		resourcePart = id.Id() +""+ partNumber
+		resourcePart = id.Id().getAsBytes() +""+ partNumber
 		resourcePartMessage = UDPMessage.UDPMessage(requestId, resourceId, ttl=resourcePartTtl, message=resourcePart)
 		requestedResource[5] = time.time()
 		Main.addToSendQueue(self, [resourcePartMessage.getDataGramPacket(), "127.0.0.1"])
