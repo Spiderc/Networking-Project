@@ -30,8 +30,7 @@ class Main:
 			Main.resourcesMap = resourcesMap
 			
 		if threadName == "monty":
-			self.listenerThread = threading.Thread(target = Main.senderReceiver.receive)
-			self.listenerThread.start()
+			self.receiver = datagramSenderReceiver.DatagramSenderReceiver(Main.receiveQueue, listener=True)
 		
 	def mainLoop(self):
 		ids = id.Id() #Create an id object
@@ -92,7 +91,7 @@ class Main:
 		
 	def stopListening(self):
 		if self.thread.name == "monty":
-			self.listenerThread.stopListening()
+			self.receiver.stopThread()
 		
 	def changeState(self, newState):
 		Main.state = newState

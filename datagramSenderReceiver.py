@@ -1,11 +1,15 @@
 import socket
 import struct
+import threading
 
 class DatagramSenderReceiver:
 
-	def __init__(self, receiveQueue):
+	def __init__(self, receiveQueue, listener=False):
 		self.receiveQueue = receiveQueue
-		self.running = True
+		if listener == True:
+			self.running = True
+			self.listenerThread = threading.Thread(target = self.receive)
+			self.listenerThread.start()
 			
 	def receive(self):
 		sockName = 0		
