@@ -16,7 +16,9 @@ class Id:
 					self.id = value
 				else:
 					print "The passed byte array is not the correct size."
-			else:
+			elif type(value) is str:
+				self.id = bytearray(value)
+			else:	
 				print "The passed constructor for an Id is not valid"
 
 	def idFactory(self):
