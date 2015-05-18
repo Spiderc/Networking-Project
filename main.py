@@ -113,7 +113,7 @@ class Main:
 			id1 = id.Id()
 			id2 = id.Id(value=argument)
 			if id2 in Main.foundResources:
-				foundResource = Main.foundResources[id2]
+				foundResource = Main.foundResources[id2.getAsHex()]
 				Main.requestMap[id1.getAsHex()] = ["query", id2] #adds the value to the requestMap dictionary, making note of the fact that it was a send
 				Main.requestedResources[id1] = [foundResource[0], foundResource[1], foundResource[2], "", 0, time.time()]
 				requestPartNumber(self, 0, id2, requestId=id1)
@@ -133,14 +133,15 @@ class Main:
 			Main.senderReceiver.send(peer, 12345, object[0])
 	
 	def handleReceiveQueue(self, object): #object is an array with the datagramPacket as the 0th element and the IP address that we got it from orginally as the 1st element
+		print "received"
 		message = UDPMessage.UDPMessage(byteArray=object)
 		if message.ttl.ttl > 0:
 			message.ttl.dec()
 			Main.addToSendQueue(self,[message.getDataGramPacket(), object[1]]) #no matter what we pass the message onto our peers
 			if message.id2.getAsHex() in Main.requestMap: #check if the message is a response to one of our messages
 				if Main.requestMap[message.id2.getAsHex()][0] == "query": #check if our message was a query
-					Main.requestedResources[message.id1][3] = Main.requestedResources[message.id1][3] + "" + message.message[20:len(message)]
-					Main.requestedResources[message.id1][4] = message.message[16:20]			
+					Main.requestedResources[message.id1.getAsHex()][3] = Main.requestedResources[message.id1][3] + "" + message.message[20:len(message)]
+					Main.requestedResources[message.id1.getAsHex()][4] = message.message[16:20]			
 					if len(message) < 456:
 						Main.addToAlertQueue(self,"Resource #" + message.id1 + " has been received.")					
 					else:
@@ -151,15 +152,15 @@ class Main:
 					delimiter = findMessageResponse[:1]
 					responseArray = findMessageResponse.split(delimiter)
 					Main.addToAlertQueue(self,"Found resource #" + message.id2.getAsHex() + ". The description of the resource is " + responseArray[5] + ". The length in bytes is " + responseArray[3] + ". The MimeType is " + responseArray[1] + ".")
-					Main.foundResources[message.id2][0] = responseArray[5] #resource description
-					Main.foundResources[message.id2][1] = responseArray[3] #resource length in bytes
-					Main.foundResources[message.id2][2] = responseArray[1] #resource MimeType
+					Main.foundResources[message.id2.getAsHex()][0] = responseArray[5] #resource description
+					Main.foundResources[message.id2.getAsHex()][1] = responseArray[3] #resource length in bytes
+					Main.foundResources[message.id2.getAsHex()][2] = responseArray[1] #resource MimeType
 			else: #the message was not related to us
 				if message.id2 in Main.resourcesMap: #treat as a query
 					partNumber = message.message[id.Id().idLengthInBytes:id.Id.idLengthInBytes + 4] #the part number of the requested resource
-					requestedResource = Main.resourcesMap[message.id2]
+					requestedResource = Main.resourcesMap[message.id2.getAsHex()]
 					resoucePartTtl = timeToLive.TimeToLive()
-					resourcePart = id.Id() + partNumber + requestedResource.fileBytes[456*int(partNumber):456*(int(partNumber)+1)]
+					resourcePart = id.Id().getAsBytes() + partNumber + requestedResource.fileBytes[456*int(partNumber):456*(int(partNumber)+1)]
 					resourcePartMessage = UDPMessage.UDPMessage(id1=message.id2, id2=message.id1, ttl=resourcePartTtl, message=resourcePart)
 					Main.addToSendQueue(self,[resourcePartMessage.getDataGramPacket(), "127.0.0.1"])
 				else: #treat as a find
@@ -169,12 +170,12 @@ class Main:
 							responseId1 = resource.id
 							responseId2 = message.id1
 							responseTtl = timeToLive.TimeToLive()
-							responseMessage = id.Id().getAsHex() + "|" + resource.mimeType + "|" + str(len(resource.fileBytes)) + "|" + resource.description
+							responseMessage = id.Id().getAsBytes() + "|" + resource.mimeType + "|" + str(len(resource.fileBytes)) + "|" + resource.description
 							responseDatagram = UDPMessage.UDPMessage(id1=responseId1, id2=responseId2, ttl=responseTtl, message=responseMessage);
 							Main.addToSendQueue(self,[responseDatagram.getDataGramPacket(), "127.0.0.1"])
 
 	def requestPartNumber(self, partNumber, resourceID, requestId=id.Id()):
-		requestedResource = Main.requestedResources[resourceID]
+		requestedResource = Main.requestedResources[resourceID.getAsHex()]
 		resoucePartTtl = timeToLive.TimeToLive()
 		resourcePart = id.Id() +""+ partNumber
 		resourcePartMessage = UDPMessage.UDPMessage(requestId, resourceID, ttl=resourcePartTtl, message=resourcePart)

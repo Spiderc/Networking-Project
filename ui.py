@@ -129,7 +129,7 @@ with open('resources/directory.txt', 'rb') as cvsfile:
 	text = csv.reader(cvsfile, delimiter = '|')
 	for row in text:
 		res = resource.Resource(row[0], row[1])
-		resourcesMap[res.id] = res
+		resourcesMap[res.id.getAsHex()] = res
 mainThread = main.Main(threadName = "monty", resourcesMap = resourcesMap)
 map = {"alerts": alerts, "createThread": createThread, "countThreads": countThreads, "exit": exit, "find": find, "help": help, "join": join, "leave": leave, "query": query, "stopThread": stopThread}
 threads = [mainThread]
