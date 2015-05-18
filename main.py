@@ -156,6 +156,7 @@ class Main:
 			else: #the message was not related to us
 				if message.id2 in Main.resourcesMap: #treat as a query
 					partNumber = message.message[id.Id().idLengthInBytes:id.Id.idLengthInBytes + 4] #the part number of the requested resource
+					print partNumber
 					requestedResource = Main.resourcesMap[message.id2.getAsHex()]
 					resoucePartTtl = timeToLive.TimeToLive()
 					resourcePart = id.Id().getAsBytes() + partNumber + requestedResource.fileBytes[456*int(partNumber):456*(int(partNumber)+1)]
@@ -164,11 +165,15 @@ class Main:
 				else: #treat as a find
 					for key in Main.resourcesMap: #loop through all of our resources
 						resource = Main.resourcesMap[key]
-						if Main.removePadding(self, message.message) in resource.fileName or Main.removePadding(self,message.message) in resource.description: #check if we have a matching resource
+						if Main.removePadding(self,message.message) in resource.description: #check if we have a matching resource
 							responseId1 = resource.id
 							responseId2 = message.id1
 							responseTtl = timeToLive.TimeToLive()
-							responseMessage = id.Id().getAsBytes() + "|" + resource.mimeType + "|" + resource.getSizeInBytes() + "|" + resource.description
+							print type(id.Id().getAsString())
+							print type(resource.mimeType)
+							print type(resource.getSizeInBytes())
+							print type(resource.description)
+							responseMessage = id.Id().getAsString() + "|" + resource.mimeType + "|" + resource.getSizeInBytes() + "|" + resource.description
 							responseDatagram = UDPMessage.UDPMessage(id1=responseId1, id2=responseId2, ttl=responseTtl, message=responseMessage);
 							Main.addToSendQueue(self,[responseDatagram.getDataGramPacket(), "127.0.0.1"])
 

@@ -14,4 +14,4 @@ class Resource:
 		self.mimeType = mimetypes.guess_type(fileName)[0]
 
 	def getSizeInBytes(self):
-		return len(self.fileBytes)
+		return str(len(self.fileBytes))
