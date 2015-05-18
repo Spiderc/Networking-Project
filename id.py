@@ -17,7 +17,7 @@ class Id:
 				else:
 					print "The passed byte array is not the correct size."
 			elif type(value) is str:
-				self.id = bytearray(value)
+				self.id = bytearray(value.decode("hex"))
 			else:	
 				print "The passed constructor for an Id is not valid"
 
