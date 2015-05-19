@@ -15,12 +15,13 @@ class Main:
 	commandQueue = Queue.Queue(maxQueueLength) #queue that contains commands from the user
 	alertQueue = Queue.Queue(maxQueueLength) #queue that contains messages that the user should see
 	requestMap = {} #dictionary that contains all of the find and query requests that the user has made
-	foundResources = {} #dictionary of resources that have been returned to us from a find request. An array with [description, lengthInBytes, MimeType]
-	requestedResources = {} #dictionary of the resources that we have done a query request for and their bytearrays. An array with [description, lengthInBytes, MimeType, bytesReceived, lastPartRequested, lastTimeRequested]
+	foundResources = {} #dictionary of resources that have been returned to us from a find request. An array with [description, lengthInBytes, MimeType, localId]
+	requestedResources = {} #dictionary of the resources that we have done a query request for and their bytearrays. An array with [description, lengthInBytes, MimeType, bytesReceived, lastPartRequested, lastTimeRequested, localId]
 	state = "not in" #current state of the threads
-	peers = ["10.20.74.0"] #an array of the ip addresses of our current peers
+	peers = [] #an array of the ip addresses of our current peers
 	senderReceiver = datagramSenderReceiver.DatagramSenderReceiver(receiveQueue)
 	resourcesMap = {} #our resources that we currently have
+	localIdCounter = 1 #counter to keep track of our local ids for resources
 
 	def __init__(self, threadName = None, resourcesMap = None):
 		self.running = True
@@ -105,22 +106,33 @@ class Main:
 				break
 		return result
 		
+	def printFoundResources(self):
+		for key in Main.foundResources:
+			foundResource = Main.foundResources[key]
+			print "Resource description is '" + foundResource[0] + "', length in bytes is '" + foundResource[1] + "', MimeType is '" + foundResource[2] + ". It has a global id of " + key + " and a local id of " + foundResource[3]
+		
 	def handleCommandQueue(self, object): #object is a command from the user with the command type as the 0th element and the parameter of the search as the 1st element
 		command = object[0]
 		argument = object[1]
 		if command == "query":
 			id1 = id.Id()
-			id2 = id.Id(value=argument)
-			print Main.foundResources
-			if id2.getAsHex() in Main.foundResources:
-				foundResource = Main.foundResources[id2.getAsHex()]
-				Main.requestMap[id1.getAsHex()] = ["query", id2.getAsHex()] #adds the value to the requestMap dictionary, making note of the fact that it was a send
-				Main.requestedResources[id2.getAsHex()] = [foundResource[0], foundResource[1], foundResource[2], "", 1, time.time()]
-				print "test"
-				Main.requestPartNumber(self, partNumber=1, resourceId=id2, requestId=id1)
-				print Main.requestedResources
+			if len(argument) != (id.Id().idLengthInBytes*2):
+				for key in Main.foundResources:
+					foundResource = Main.foundResources[key]
+					if argument == foundResource[3]:
+						id2 = id.Id(value=key)
+						Main.requestMap[id1.getAsHex()] = ["query", key] #adds the value to the requestMap dictionary, making note of the fact that it was a send
+						Main.requestedResources[key] = [foundResource[0], foundResource[1], foundResource[2], "", 1, time.time(), foundResource[3]]
+						Main.requestPartNumber(self, partNumber=1, resourceId=id2, requestId=id1)
 			else:
-				Main.addToAlertQueue(self, "Unknown resource: " + argument)
+				id2 = id.Id(value=argument)
+				if id2.getAsHex() in Main.foundResources:
+					foundResource = Main.foundResources[id2.getAsHex()]
+					Main.requestMap[id1.getAsHex()] = ["query", id2.getAsHex()] #adds the value to the requestMap dictionary, making note of the fact that it was a send
+					Main.requestedResources[id2.getAsHex()] = [foundResource[0], foundResource[1], foundResource[2], "", 1, time.time(), foundResource[3]]
+					Main.requestPartNumber(self, partNumber=1, resourceId=id2, requestId=id1)
+				else:
+					Main.addToAlertQueue(self, "Unknown resource: " + argument)
 		elif command == "find":
 			id1 = id.Id()
 			id2 = id.Id()
@@ -152,8 +164,9 @@ class Main:
 						findMessageResponse = message.message[id.Id().idLengthInBytes:]
 						delimiter = findMessageResponse[:1]
 						responseArray = findMessageResponse.split(delimiter)
-						Main.addToAlertQueue(self,"Found resource " + message.id2.getAsHex() + ". The description of the resource is " + responseArray[3] + " The length in bytes is " + responseArray[2] + ". The MimeType is " + responseArray[1] + ".")
-						Main.foundResources[message.id2.getAsHex()] = [responseArray[3], responseArray[2], responseArray[1]]
+						Main.addToAlertQueue(self,"Found resource " + message.id2.getAsHex() + ". The description of the resource is " + responseArray[3] + " The length in bytes is " + responseArray[2] + ". The MimeType is " + responseArray[1] + ". It's local id is: " + str(localIdCounter))
+						Main.foundResources[message.id2.getAsHex()] = [responseArray[3], responseArray[2], responseArray[1], str(Main.localIdCounter)]
+						Main.localIdCounter = Main.localIdCounter + 1
 			else: #the message was not related to us
 				if message.id2.getAsHex() in Main.resourcesMap: #treat as a query
 					print "handling"

@@ -55,20 +55,25 @@ def find(argument):
 		print "Asking the peer community for resources that have: " + argument + "."
 		mainThread.addToCommandQueue(["find", argument])
 	else:
-		print "You are not currently in the peer community so you can not find resources."		
+		print "You are not currently in the peer community so you can not find resources."
+		
+def foundResources(argument):
+	global mainThread
+	mainThread.printFoundResources()
 		
 def help(argument):
 	print "The recognized commands are as follows:"
-	print "alerts		Prints out the next pending alert"
+	print "alerts			Prints out the next pending alert"
 	print "createThread <int>	Creates a number of threads equal to the passed integer"
 	print "countThreads		Returns the number of currently active threads"
 	print "exit			Exits the program"
 	print "find <String>		Asks the peer community for resources that have the passed String"
+	print "foundResources		Prints the information of all the resources found after a find request"
 	print "help			Displays this menu"
 	print "join			Joins the peer community"
 	print "leave			Leaves the peer community"
 	print "query <String>		Queries the peer community for resources with the passed String"
-	print "stopThread <int>		Stops a number of threads equal to the passed integer"
+	print "stopThread <int>	Stops a number of threads equal to the passed integer"
 
 def join(argument):
 	global inCommunity
@@ -78,7 +83,6 @@ def join(argument):
 	else:
 		print "Joining the peer community"
 		mainThread.changeState("join")
-		#stop other threads? #TODO: fix this
 		#TODO: start listening to multicast
 		inCommunity = True
 
@@ -132,7 +136,7 @@ with open('resources/directory.txt', 'rb') as cvsfile:
 		res = resource.Resource(row[0], row[1])
 		resourcesMap[res.id.getAsHex()] = res
 mainThread = main.Main(threadName = "monty", resourcesMap = resourcesMap)
-map = {"alerts": alerts, "createThread": createThread, "countThreads": countThreads, "exit": exit, "find": find, "help": help, "join": join, "leave": leave, "query": query, "stopThread": stopThread}
+map = {"alerts": alerts, "createThread": createThread, "countThreads": countThreads, "exit": exit, "find": find, "foundResources": foundResources, "help": help, "join": join, "leave": leave, "query": query, "stopThread": stopThread}
 threads = [mainThread]
 while looper:
 	if not mainThread.alertQueue.empty():
