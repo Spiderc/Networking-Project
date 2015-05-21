@@ -6,6 +6,7 @@ import timeToLive
 import datagramSenderReceiver
 import time
 import struct
+import mimetypes
 
 class Main:
 	#Initialize sending & receiving queues
@@ -23,6 +24,7 @@ class Main:
 	senderReceiver = datagramSenderReceiver.DatagramSenderReceiver(receiveQueue)
 	resourcesMap = {} #our resources that we currently have
 	localIdCounter = 1 #counter to keep track of our local ids for resources
+	completedResources = {} #the resources that we have finished downloading. An array with [description, fileBytes, MimeType, localId]
 
 	def __init__(self, threadName = None, resourcesMap = None):
 		self.running = True
@@ -102,7 +104,7 @@ class Main:
 		result = id.Id(value=id.Id().zeroId)
 		for key in Main.requestedResources:
 			requestedResource = Main.requestedResources[key]
-			if requestedResource[5] + 10 < time.time():
+			if requestedResource[3] < requestedResource[1] and requestedResource[5] + 10 < time.time():
 				result = id.Id(value=key)
 				break
 		return result
@@ -110,7 +112,23 @@ class Main:
 	def printFoundResources(self):
 		for key in Main.foundResources:
 			foundResource = Main.foundResources[key]
-			print "Resource description is '" + foundResource[0] + "', length in bytes is '" + foundResource[1] + "', MimeType is '" + foundResource[2] + ". It has a global id of " + key + " and a local id of " + foundResource[3]
+			print "Resource description is '" + foundResource[0] + "', length in bytes is '" + foundResource[1] + "', MimeType is '" + foundResource[2] + ". It has a global id of " + key + " and a local id of " + str(foundResource[3]) + "."
+			
+	def printCompletedResources(self):
+		for key in Main.completedResources:
+			completedResource = Main.completedResources[key]
+			print "Resource description is '" + completedResource[0] + "', MimeType is '" + completedResource[2] + "'. It has a global id of " + key + " and a local id of " + str(completedResource[3]) + "."
+			
+	def download(self, resource):
+		if resource in Main.completedResources: #check if they're using the global id
+			with open(str(resource) + mimetypes.guess_extension(Main.completedResources[resource][2]), "wb") as output:
+				output.write(Main.completedResources[resource][1])
+		else:
+			for key in Main.completedResources: #loop throught to check if they're using the local id
+				completedResource = Main.completedResources[key]
+				if completedResource[3] == resource:
+					with open(str(resource) + mimetypes.guess_extension(completedResource[2]), "wb") as output:
+						output.write(completedResource[1])
 		
 	def handleCommandQueue(self, object): #object is a command from the user with the command type as the 0th element and the parameter of the search as the 1st element
 		command = object[0]
@@ -155,16 +173,13 @@ class Main:
 			if message.id2.getAsHex() in Main.requestMap: #check if the message is a response to one of our messages
 				if Main.requestMap[message.id2.getAsHex()][0] == "query": #check if our message was a query
 					messagePartNumber = struct.unpack("I",message.message[message.id1.idLengthInBytes:message.id1.idLengthInBytes+4])[0] #4 is the size of the partNumber
-					print "got part: " + str(messagePartNumber)
-					print "looking for part: " + str(Main.requestedResources[message.id1.getAsHex()][4])
 					if messagePartNumber == Main.requestedResources[message.id1.getAsHex()][4]: #check to see if the message has the part number that matches that last one that we requested
-						print "adding part: " + str(messagePartNumber)
 						Main.requestedResources[message.id1.getAsHex()][3] = Main.requestedResources[message.id1.getAsHex()][3] + "" + message.message[message.id1.idLengthInBytes+4:] #4 is the size of the partNumber
-						if len(message.message) < 456:
-							Main.addToAlertQueue(self,"Resource " + message.id1 + " has been received.")					
+						Main.requestedResources[message.id1.getAsHex()][4] = Main.requestedResources[message.id1.getAsHex()][4] + 1
+						if len(message.message) < 456: #check to see if this was the last part
+							Main.addToAlertQueue(self,"Resource " + message.id1.getAsHex() + " has been received.")
+							Main.completedResources[message.id1.getAsHex()] = [Main.requestedResources[message.id1.getAsHex()][0], Main.requestedResources[message.id1.getAsHex()][3], Main.requestedResources[message.id1.getAsHex()][2], Main.requestedResources[message.id1.getAsHex()][6]]
 						else:
-							Main.requestedResources[message.id1.getAsHex()][4] = Main.requestedResources[message.id1.getAsHex()][4] + 1
-							print "requesting part: " + str(Main.requestedResources[message.id1.getAsHex()][4])
 							Main.requestPartNumber(self, partNumber=Main.requestedResources[message.id1.getAsHex()][4], resourceId=message.id1, requestId=Main.requestedResources[message.id1.getAsHex()][7])
 				else: #otherwise it was a find
 					if message.id1.getAsHex() not in Main.foundResources: #we don't need to put it in the foundResources dictionary if it's already there
@@ -176,10 +191,8 @@ class Main:
 						Main.localIdCounter = Main.localIdCounter + 1
 			else: #the message was not related to us
 				if message.id2.getAsHex() in Main.resourcesMap: #treat as a query
-					print "handling"
 					partNumberBytes = message.message[id.Id().idLengthInBytes:id.Id().idLengthInBytes + 4] #the part number of the requested resource
 					partNumber = struct.unpack("I",partNumberBytes)[0]
-					print partNumber
 					requestedResource = Main.resourcesMap[message.id2.getAsHex()]
 					resourcePartTtl = timeToLive.TimeToLive()
 					if 456*(int(partNumber)) < int(requestedResource.getSizeInBytes()):
@@ -204,7 +217,6 @@ class Main:
 		requestedResource = Main.requestedResources[resourceId.getAsHex()]
 		resourcePartTtl = timeToLive.TimeToLive()
 		resourcePart = id.Id().getAsBytes() + bytearray(struct.pack("I", partNumber))
-		print partNumber
 		resourcePartMessage = UDPMessage.UDPMessage(requestId, resourceId, ttl=resourcePartTtl, message=resourcePart)
 		requestedResource[5] = time.time()
 		Main.addToSendQueue(self, [resourcePartMessage.getDataGramPacket(), "127.0.0.1"])

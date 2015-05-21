@@ -25,9 +25,17 @@ def createThread(argument):
 	except ValueError:
 		print "The createThread command only accepts integers as a parameter."
 
+def completedResources(argument):
+	global mainThread
+	mainThread.printCompletedResources()
+
 def countThreads(argument):
 	global threads
 	print "There are currently " + str(len(threads)) + " threads."
+	
+def download(argument):
+	global mainThread
+	mainThread.download(argument)
 
 def error(command):
 	print command + " is not a recognized command. Type help to see all recognized commands."
@@ -65,7 +73,9 @@ def help(argument):
 	print "The recognized commands are as follows:"
 	print "alerts			Prints out the next pending alert"
 	print "createThread <int>	Creates a number of threads equal to the passed integer"
+	print "completedResources	Prints the information of all the resources we've finished querying for"
 	print "countThreads		Returns the number of currently active threads"
+	print "download <String>	Downloads the file with associated string"
 	print "exit			Exits the program"
 	print "find <String>		Asks the peer community for resources that have the passed String"
 	print "foundResources		Prints the information of all the resources found after a find request"
@@ -136,7 +146,7 @@ with open('resources/directory.txt', 'rb') as cvsfile:
 		res = resource.Resource(row[0], row[1])
 		resourcesMap[res.id.getAsHex()] = res
 mainThread = main.Main(threadName = "monty", resourcesMap = resourcesMap)
-map = {"alerts": alerts, "createThread": createThread, "countThreads": countThreads, "exit": exit, "find": find, "foundResources": foundResources, "help": help, "join": join, "leave": leave, "query": query, "stopThread": stopThread}
+map = {"alerts": alerts, "createThread": createThread, "completedResources": completedResources, "countThreads": countThreads, "download": download, "exit": exit, "find": find, "foundResources": foundResources, "help": help, "join": join, "leave": leave, "query": query, "stopThread": stopThread}
 threads = [mainThread]
 while looper:
 	if not mainThread.alertQueue.empty():
