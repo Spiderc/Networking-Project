@@ -153,10 +153,10 @@ class Main:
 			Main.addToSendQueue(self,[message.getDataGramPacket(), object[1]]) #no matter what we pass the message onto our peers
 			if message.id2.getAsHex() in Main.requestMap: #check if the message is a response to one of our messages
 				if Main.requestMap[message.id2.getAsHex()][0] == "query": #check if our message was a query
-					Main.requestedResources[message.id1.getAsHex()][3] = Main.requestedResources[message.id1][3] + "" + message.message[20:len(message)]
-					Main.requestedResources[message.id1.getAsHex()][4] = int(message.message[16:20])
+					Main.requestedResources[message.id1.getAsHex()][3] = Main.requestedResources[message.id1][3] + "" + message.message[id1.idLengthInBytes+ttl.sizeInBytes:)]
+					Main.requestedResources[message.id1.getAsHex()][4] = int(message.message[id1.idLengthInBytes:id1.idLengthInBytes+ttl.sizeInBytes])
 					if len(message) < 456:
-						Main.addToAlertQueue(self,"Resource #" + message.id1 + " has been received.")					
+						Main.addToAlertQueue(self,"Resource " + message.id1 + " has been received.")					
 					else:
 						requestPartNumber(self, id.Id(value=Main.requestedResources[message.id1][4]), message.id1)
 				else: #otherwise it was a find
