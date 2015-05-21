@@ -171,15 +171,16 @@ class Main:
 			else: #the message was not related to us
 				if message.id2.getAsHex() in Main.resourcesMap: #treat as a query
 					print "handling"
-					partNumber = message.message[id.Id().idLengthInBytes:id.Id.idLengthInBytes + 4] #the part number of the requested resource
+					partNumberBytes = message.message[id.Id().idLengthInBytes:id.Id.idLengthInBytes + 4] #the part number of the requested resource
+					partNumber = struct.unpack("I",partNumberBytes)[0]
 					print partNumber
 					requestedResource = Main.resourcesMap[message.id2.getAsHex()]
-					resoucePartTtl = timeToLive.TimeToLive()
+					resourcePartTtl = timeToLive.TimeToLive()
 					if 456*(int(partNumber)) < int(requestedResource.getSizeInBytes()):
-						resourcePart = id.Id().getAsBytes() + partNumber + requestedResource.fileBytes[456*(int(partNumber)-1):456*(int(partNumber))]
+						resourcePart = id.Id().getAsBytes() + partNumberBytes + requestedResource.fileBytes[456*(int(partNumber)-1):456*(int(partNumber))]
 						resourcePartMessage = UDPMessage.UDPMessage(id1=message.id2, id2=message.id1, ttl=resourcePartTtl, message=resourcePart)
 					else:
-						resourcePart = id.Id().getAsBytes() + partNumber + requestedResource.fileBytes[456*(int(partNumber)-1):]
+						resourcePart = id.Id().getAsBytes() + partNumberBytes + requestedResource.fileBytes[456*(int(partNumber)-1):]
 						resourcePartMessage = UDPMessage.UDPMessage(id1=message.id2, id2=message.id1, ttl=resourcePartTtl, message=resourcePart, lastPacket=True)
 					Main.addToSendQueue(self,[resourcePartMessage.getDataGramPacket(), "127.0.0.1"])
 				else: #treat as a find
