@@ -156,11 +156,11 @@ class Main:
 				if Main.requestMap[message.id2.getAsHex()][0] == "query": #check if our message was a query
 					Main.requestedResources[message.id1.getAsHex()][3] = Main.requestedResources[message.id1.getAsHex()][3] + "" + message.message[message.id1.idLengthInBytes+4:] #4 is the size of the partNumber
 					Main.requestedResources[message.id1.getAsHex()][4] = struct.unpack("I",message.message[message.id1.idLengthInBytes:message.id1.idLengthInBytes+4])[0] #4 is the size of the partNumber
-					if len(message) < 456:
+					if len(message.message) < 456:
 						Main.addToAlertQueue(self,"Resource " + message.id1 + " has been received.")					
 					else:
 						Main.requestedResources[message.id1.getAsHex()][4] = Main.requestedResources[message.id1.getAsHex()][4] + 1
-						requestPartNumber(self, id.Id(value=Main.requestedResources[message.id1.getAsHex()][4]), message.id1)
+						Main.requestPartNumber(self, partNumber=Main.requestedResources[message.id1.getAsHex()][4], resourceId=message.id1)
 				else: #otherwise it was a find
 					if message.id1.getAsHex() not in Main.foundResources: #we don't need to put it in the foundResources dictionary if it's already there
 						findMessageResponse = message.message[id.Id().idLengthInBytes:]
@@ -198,7 +198,7 @@ class Main:
 	def requestPartNumber(self, partNumber, resourceId, requestId=id.Id()):
 		requestedResource = Main.requestedResources[resourceId.getAsHex()]
 		resourcePartTtl = timeToLive.TimeToLive()
-		resourcePart = id.Id().getAsBytes() +""+ struct.pack("I", partNumber)
+		resourcePart = id.Id().getAsBytes() + bytearray(struct.pack("I", partNumber))
 		resourcePartMessage = UDPMessage.UDPMessage(requestId, resourceId, ttl=resourcePartTtl, message=resourcePart)
 		requestedResource[5] = time.time()
 		Main.addToSendQueue(self, [resourcePartMessage.getDataGramPacket(), "127.0.0.1"])
