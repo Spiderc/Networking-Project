@@ -154,7 +154,7 @@ class Main:
 			Main.addToSendQueue(self,[message.getDataGramPacket(), object[1]]) #no matter what we pass the message onto our peers
 			if message.id2.getAsHex() in Main.requestMap: #check if the message is a response to one of our messages
 				if Main.requestMap[message.id2.getAsHex()][0] == "query": #check if our message was a query
-					Main.requestedResources[message.id1.getAsHex()][3] = Main.requestedResources[message.id1][3] + "" + message.message[id1.idLengthInBytes+ttl.sizeInBytes:]
+					Main.requestedResources[message.id1.getAsHex()][3] = Main.requestedResources[message.id1.getAsHex()][3] + "" + message.message[message.id1.idLengthInBytes+ttl.sizeInBytes:]
 					Main.requestedResources[message.id1.getAsHex()][4] = int(message.message[id1.idLengthInBytes:id1.idLengthInBytes+ttl.sizeInBytes])
 					if len(message) < 456:
 						Main.addToAlertQueue(self,"Resource " + message.id1 + " has been received.")					
@@ -171,7 +171,7 @@ class Main:
 			else: #the message was not related to us
 				if message.id2.getAsHex() in Main.resourcesMap: #treat as a query
 					print "handling"
-					partNumberBytes = message.message[id.Id().idLengthInBytes:id.Id.idLengthInBytes + 4] #the part number of the requested resource
+					partNumberBytes = message.message[id.Id().idLengthInBytes:id.Id().idLengthInBytes + 4] #the part number of the requested resource
 					partNumber = struct.unpack("I",partNumberBytes)[0]
 					print partNumber
 					requestedResource = Main.resourcesMap[message.id2.getAsHex()]
