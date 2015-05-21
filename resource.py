@@ -8,9 +8,7 @@ class Resource:
 		self.id = idObject
 		self.fileName = fileName
 		self.description = description
-		#file = open("resources/" + fileName)
 		self.fileBytes = open(("resources/" + fileName),"rb").read()
-		#file.close()
 		self.mimeType = mimetypes.guess_type(fileName)[0]
 
 	def getSizeInBytes(self):

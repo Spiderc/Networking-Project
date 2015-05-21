@@ -5,6 +5,7 @@ import UDPMessage
 import timeToLive
 import datagramSenderReceiver
 import time
+import struct
 
 class Main:
 	#Initialize sending & receiving queues
@@ -18,7 +19,7 @@ class Main:
 	foundResources = {} #dictionary of resources that have been returned to us from a find request. An array with [description, lengthInBytes, MimeType, localId]
 	requestedResources = {} #dictionary of the resources that we have done a query request for and their bytearrays. An array with [description, lengthInBytes, MimeType, bytesReceived, lastPartRequested, lastTimeRequested, localId]
 	state = "not in" #current state of the threads
-	peers = ["10.20.60.75"] #an array of the ip addresses of our current peers
+	peers = ["10.20.85.58"] #an array of the ip addresses of our current peers
 	senderReceiver = datagramSenderReceiver.DatagramSenderReceiver(receiveQueue)
 	resourcesMap = {} #our resources that we currently have
 	localIdCounter = 1 #counter to keep track of our local ids for resources
@@ -164,7 +165,7 @@ class Main:
 						findMessageResponse = message.message[id.Id().idLengthInBytes:]
 						delimiter = findMessageResponse[:1]
 						responseArray = findMessageResponse.split(delimiter)
-						Main.addToAlertQueue(self,"Found resource " + message.id1.getAsHex() + ". The description of the resource is '" + responseArray[3] + "' The length in bytes is " + responseArray[2] + ". The MimeType is " + responseArray[1] + ". It's local id is: " + str(Main.localIdCounter))
+						Main.addToAlertQueue(self,"Found resource " + message.id1.getAsHex() + ". The description of the resource is '" + responseArray[3] + "' The length in bytes is " + responseArray[2] + ". The MimeType is " + responseArray[1] + ". Its local id is: " + str(Main.localIdCounter))
 						Main.foundResources[message.id1.getAsHex()] = [responseArray[3], responseArray[2], responseArray[1], str(Main.localIdCounter)]
 						Main.localIdCounter = Main.localIdCounter + 1
 			else: #the message was not related to us
@@ -195,7 +196,7 @@ class Main:
 	def requestPartNumber(self, partNumber, resourceId, requestId=id.Id()):
 		requestedResource = Main.requestedResources[resourceId.getAsHex()]
 		resourcePartTtl = timeToLive.TimeToLive()
-		resourcePart = id.Id().getAsBytes() +""+ str(partNumber)
+		resourcePart = id.Id().getAsBytes() +""+ struct.pack("I", partNumber)
 		resourcePartMessage = UDPMessage.UDPMessage(requestId, resourceId, ttl=resourcePartTtl, message=resourcePart)
 		requestedResource[5] = time.time()
 		Main.addToSendQueue(self, [resourcePartMessage.getDataGramPacket(), "127.0.0.1"])
