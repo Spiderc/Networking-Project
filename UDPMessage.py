@@ -24,7 +24,7 @@ class UDPMessage:
 				self.ttl = ttl
 			
 			if len(message) > 476:
-				print "ERROR: Message is to long"
+				print "ERROR: Message is too long"
 				#Send Error
 			elif len(message) < 476 and lastPacket == False:
 				while len(message) < 476:
@@ -42,7 +42,6 @@ class UDPMessage:
 		
 	def getDataGramPacket(self):
 		if self.id1 != None:
-			print self.id1.getAsHex()
 			self.dataGramPacket = self.id1.getAsBytes() + self.id2.getAsBytes() + self.ttl.getAsBytes() + bytearray(self.message)
 		else:
 			self.dataGramPacket = self.byteArray

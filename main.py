@@ -18,7 +18,7 @@ class Main:
 	foundResources = {} #dictionary of resources that have been returned to us from a find request. An array with [description, lengthInBytes, MimeType, localId]
 	requestedResources = {} #dictionary of the resources that we have done a query request for and their bytearrays. An array with [description, lengthInBytes, MimeType, bytesReceived, lastPartRequested, lastTimeRequested, localId]
 	state = "not in" #current state of the threads
-	peers = [] #an array of the ip addresses of our current peers
+	peers = ["10.20.60.75"] #an array of the ip addresses of our current peers
 	senderReceiver = datagramSenderReceiver.DatagramSenderReceiver(receiveQueue)
 	resourcesMap = {} #our resources that we currently have
 	localIdCounter = 1 #counter to keep track of our local ids for resources
@@ -153,19 +153,19 @@ class Main:
 			Main.addToSendQueue(self,[message.getDataGramPacket(), object[1]]) #no matter what we pass the message onto our peers
 			if message.id2.getAsHex() in Main.requestMap: #check if the message is a response to one of our messages
 				if Main.requestMap[message.id2.getAsHex()][0] == "query": #check if our message was a query
-					Main.requestedResources[message.id1.getAsHex()][3] = Main.requestedResources[message.id1][3] + "" + message.message[id1.idLengthInBytes+ttl.sizeInBytes:)]
+					Main.requestedResources[message.id1.getAsHex()][3] = Main.requestedResources[message.id1][3] + "" + message.message[id1.idLengthInBytes+ttl.sizeInBytes:]
 					Main.requestedResources[message.id1.getAsHex()][4] = int(message.message[id1.idLengthInBytes:id1.idLengthInBytes+ttl.sizeInBytes])
 					if len(message) < 456:
 						Main.addToAlertQueue(self,"Resource " + message.id1 + " has been received.")					
 					else:
 						requestPartNumber(self, id.Id(value=Main.requestedResources[message.id1][4]), message.id1)
 				else: #otherwise it was a find
-					if message.id2.getAsHex() not in Main.foundResources: #we don't need to put it in the foundResources dictionary if it's already there
+					if message.id1.getAsHex() not in Main.foundResources: #we don't need to put it in the foundResources dictionary if it's already there
 						findMessageResponse = message.message[id.Id().idLengthInBytes:]
 						delimiter = findMessageResponse[:1]
 						responseArray = findMessageResponse.split(delimiter)
-						Main.addToAlertQueue(self,"Found resource " + message.id2.getAsHex() + ". The description of the resource is " + responseArray[3] + " The length in bytes is " + responseArray[2] + ". The MimeType is " + responseArray[1] + ". It's local id is: " + str(localIdCounter))
-						Main.foundResources[message.id2.getAsHex()] = [responseArray[3], responseArray[2], responseArray[1], str(Main.localIdCounter)]
+						Main.addToAlertQueue(self,"Found resource " + message.id1.getAsHex() + ". The description of the resource is '" + responseArray[3] + "' The length in bytes is " + responseArray[2] + ". The MimeType is " + responseArray[1] + ". It's local id is: " + str(Main.localIdCounter))
+						Main.foundResources[message.id1.getAsHex()] = [responseArray[3], responseArray[2], responseArray[1], str(Main.localIdCounter)]
 						Main.localIdCounter = Main.localIdCounter + 1
 			else: #the message was not related to us
 				if message.id2.getAsHex() in Main.resourcesMap: #treat as a query
@@ -186,8 +186,6 @@ class Main:
 						resource = Main.resourcesMap[key]
 						if Main.removePadding(self,message.message) in resource.description: #check if we have a matching resource
 							responseId1 = resource.id
-							print responseId1.getAsHex()
-							print id.Id(value=responseId1.getAsHex()).getAsHex()
 							responseId2 = message.id1
 							responseTtl = timeToLive.TimeToLive()
 							responseMessage = id.Id().getAsBytes() + "|" + resource.mimeType + "|" + resource.getSizeInBytes() + "|" + resource.description
