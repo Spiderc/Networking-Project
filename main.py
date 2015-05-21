@@ -20,7 +20,7 @@ class Main:
 	foundResources = {} #dictionary of resources that have been returned to us from a find request. An array with [description, lengthInBytes, MimeType, localId]
 	requestedResources = {} #dictionary of the resources that we have done a query request for and their bytearrays. An array with [description, lengthInBytes, MimeType, bytesReceived, lastPartRequested, lastTimeRequested, localId, requestId]
 	state = "not in" #current state of the threads
-	peers = ["10.20.85.58"] #an array of the ip addresses of our current peers
+	peers = ["140.209.121.104"] #an array of the ip addresses of our current peers
 	senderReceiver = datagramSenderReceiver.DatagramSenderReceiver(receiveQueue)
 	resourcesMap = {} #our resources that we currently have
 	localIdCounter = 1 #counter to keep track of our local ids for resources
@@ -172,7 +172,7 @@ class Main:
 			Main.addToSendQueue(self,[message.getDataGramPacket(), object[1]]) #no matter what we pass the message onto our peers
 			if message.id2.getAsHex() in Main.requestMap: #check if the message is a response to one of our messages
 				if Main.requestMap[message.id2.getAsHex()][0] == "query": #check if our message was a query
-					messagePartNumber = struct.unpack("I",message.message[message.id1.idLengthInBytes:message.id1.idLengthInBytes+4])[0] #4 is the size of the partNumber
+					messagePartNumber = struct.unpack(">I",message.message[message.id1.idLengthInBytes:message.id1.idLengthInBytes+4])[0] #4 is the size of the partNumber
 					if messagePartNumber == Main.requestedResources[message.id1.getAsHex()][4]: #check to see if the message has the part number that matches that last one that we requested
 						Main.requestedResources[message.id1.getAsHex()][3] = Main.requestedResources[message.id1.getAsHex()][3] + "" + message.message[message.id1.idLengthInBytes+4:] #4 is the size of the partNumber
 						Main.requestedResources[message.id1.getAsHex()][4] = Main.requestedResources[message.id1.getAsHex()][4] + 1
@@ -192,7 +192,7 @@ class Main:
 			else: #the message was not related to us
 				if message.id2.getAsHex() in Main.resourcesMap: #treat as a query
 					partNumberBytes = message.message[id.Id().idLengthInBytes:id.Id().idLengthInBytes + 4] #the part number of the requested resource
-					partNumber = struct.unpack("I",partNumberBytes)[0]
+					partNumber = struct.unpack(">I",partNumberBytes)[0]
 					requestedResource = Main.resourcesMap[message.id2.getAsHex()]
 					resourcePartTtl = timeToLive.TimeToLive()
 					if 456*(int(partNumber)) < int(requestedResource.getSizeInBytes()):
@@ -216,16 +216,11 @@ class Main:
 	def requestPartNumber(self, partNumber, resourceId, requestId):
 		requestedResource = Main.requestedResources[resourceId.getAsHex()]
 		resourcePartTtl = timeToLive.TimeToLive()
-		resourcePart = id.Id().getAsBytes() + bytearray(struct.pack("I", partNumber))
+		resourcePart = id.Id().getAsBytes() + bytearray(struct.pack(">I", partNumber))
 		resourcePartMessage = UDPMessage.UDPMessage(requestId, resourceId, ttl=resourcePartTtl, message=resourcePart)
 		requestedResource[5] = time.time()
 		Main.addToSendQueue(self, [resourcePartMessage.getDataGramPacket(), "127.0.0.1"])
 		
 	def removePadding(self, message):
 		return message.replace(message[-1:],"")		
-		
 
-		
-		
-		
-	
